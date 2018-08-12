@@ -18,7 +18,16 @@
                     <form action="{{ url('/images-save') }}" data-count= "{{ $cats->count }}" enctype="multipart/form-data" class="dropzone" id="my-dropzone">
                         {{ csrf_field() }} {{ Form::hidden('cat_id', $cats->id) }} {{ form::hidden('project_id', $project_id )}}
                     </form>
-                  </div><a href="{{ route('project-show') }}" style="margin-left: 90%"><b style="color: black">Fertig</b></a>
+                  </div>
+
+                  <div class="row" id="ferting-btn" style="display: none;">
+                    <div class="col-sm-4 col-sm-offset-4">
+                      <a class="btn btn-success btn-block" href="{{ route('project-show') }}"><b>Fertig</b></a>
+                    </div>
+                  </div>
+
+                  
+                  <br>
                 </div>
               </div>
 
@@ -28,13 +37,25 @@
 </div>
 
 <script>
+    var total_photos_counter = 0;
     var max = {{ $cats->count }};
     Dropzone.options.myDropzone = {
+        maxFiles: 5,
         paramName: 'file',
         maxFilesize: 2, // MB
         maxFiles: max,
         acceptedFiles: ".jpeg,.jpg,.png,.gif",
         addRemoveLinks: true,
+
+      success: function (file, done) {
+          total_photos_counter++;
+          $("#counter").text("# " + total_photos_counter);
+          if(total_photos_counter>0){
+            $('#ferting-btn').show();
+          }else{
+            $('#ferting-btn').hide();
+          }
+      }
     };
 </script>
 @endsection

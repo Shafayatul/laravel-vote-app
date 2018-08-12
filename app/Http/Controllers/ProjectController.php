@@ -147,6 +147,7 @@ class ProjectController extends Controller
     {
 
 
+      // Log::debug('An informational message.');
 
       $cat_id = $request->input('cat_id');
       $userId = Auth::id();
@@ -218,9 +219,10 @@ class ProjectController extends Controller
             ->get();
       $user = $dynamic_ids[0]->user_id;
       $cat = $dynamic_ids[0]->cat_id;
+
       $thumb_filePath = 'images/'.$user.'/'.$cat.'/thumbnail/';
       File::delete($thumb_filePath.$fileName);
-      $wide_filePath = 'images/'.$user.'/'.$cat.'/thumbnail/';
+      $wide_filePath = 'images/'.$user.'/'.$cat.'/';
       File::delete($wide_filePath.$fileName);
 
       DB::table('Images')->where('filename', '=', $fileName)->delete();

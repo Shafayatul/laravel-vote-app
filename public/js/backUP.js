@@ -1,5 +1,5 @@
 "use strict";
-
+var total_image = 0;
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
@@ -798,15 +798,7 @@ var Dropzone = function (_Emitter) {
                     },
                     success: function(response)
                     {
-                        total_photos_counter--;
                         alert("Erfolgreich gelöscht.");
-                          if(total_photos_counter>0){
-                            $('#ferting-btn').show();
-                          }else{
-                            $('#ferting-btn').hide();
-                          }
-
-
                     }
                 });
 
@@ -2806,7 +2798,14 @@ var Dropzone = function (_Emitter) {
   }, {
     key: "submitRequest",
     value: function submitRequest(xhr, formData, files) {
-      xhr.send(formData);
+        
+        if (total_image<5) {
+            xhr.send(formData);
+        }else{
+            alert('You can upload more than 5 images.');
+            console.log("llllll");
+        }
+        
     }
 
     // Called internally when processing is finished.
@@ -2815,6 +2814,10 @@ var Dropzone = function (_Emitter) {
   }, {
     key: "_finished",
     value: function _finished(files, responseText, e) {
+        total_image++;
+        console.log(files);
+        console.log(responseText);
+        console.log(e);
       for (var _iterator31 = files, _isArray31 = true, _i33 = 0, _iterator31 = _isArray31 ? _iterator31 : _iterator31[Symbol.iterator]();;) {
         var _ref30;
 
