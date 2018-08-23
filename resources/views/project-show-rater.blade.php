@@ -10,6 +10,7 @@
 <input type = "hidden" name = "ajax_token" value = "{{csrf_token()}}">
 <div class="container-fluid">
     <div class="row justify-content-center">
+
         <div class="col-md-8">
             <div class="card">
                 <div class="card-header">Projekte anzeigen...</div>
@@ -19,6 +20,9 @@
 
                     <section class="projects endless-pagination" data-next-page="{{ $projects->nextPageUrl() }}">
                       @foreach($projects as $project)
+                          @if($project->youtube !="")
+                            <p style=""> <button link="{{ $project->youtube }}" class="btn btn-primary youtube-btn">Youtube Video</button> </p>
+                          @endif
                           <p style=""><b>Kategorie: {{ $project->cat_name }}
                           <p style=""><b>Projektname:  {{ $project->projektname }} ID: {{ $project->id }}</b></p>
                           @if ( $project->stat === 0 )
@@ -121,14 +125,36 @@
       </div>
     </div>
 
+<!-- Youtube Modal -->
+<div class="modal fade" id="myYoutube" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+      
+        <iframe id="iframeYoutube" width="100%" height="300px" src="" frameborder="0" allowfullscreen></iframe> 
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
+
 <script type="text/javascript">
+
+function playYoutube(){
+
+}
 
 
 $(document).ready(function() {
-
 
     $(window).scroll(fetchtickets);
 
@@ -158,6 +184,23 @@ $(document).ready(function() {
           $('.ajax-load').html('<h2>No more post left</h2>');
         }
     }
+
+    // Youtube popup
+    $(document).on("click",".youtube-btn",function(){
+      var link = $(this).attr('link');
+      showYoutube(link);
+    });
+    $("#myYoutube").on("hidden.bs.modal",function(){
+      $("#iframeYoutube").attr("src","#");
+    });
+
+    function showYoutube(src){
+      src = src.replace('watch?v=','embed/');
+      $("#iframeYoutube").attr("src",src);
+      $("#myYoutube").modal("show");
+      $('.modal-backdrop').css('position', 'relative');
+    }
+
 });
 </script>
 

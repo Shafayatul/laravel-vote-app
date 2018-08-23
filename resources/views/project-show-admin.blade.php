@@ -27,6 +27,9 @@
 
                       <br>
                       <br>
+                          @if($project->youtube !="")
+                            <p style=""> <button link="{{ $project->youtube }}" class="btn btn-primary youtube-btn">Youtube Video</button> </p>
+                          @endif
                           <p style=""><b>Kategorie: {{ $project->cat_name }}
                           <p style=""><b>Projektname:  {{ $project->projektname }} ID: {{ $project->id }}</b></p>
                           @if ( $project->stat === 0 )
@@ -73,10 +76,10 @@
                       <div id="myModal-{{$project->name}}" class="modal">
                         <span class="close cursor" onclick="closeModal('{{$project->name}}')">&times;</span>
                         <div class="modal-content">
-                          <div class = "wide_wrapper" >
-                          	@foreach($project->images as $image)
-                            <div class="mySlides-<?php echo $project->name ?>" data-responsive="true" style = "width : 100%;height : 100%;" id = "wide-<?php echo md5($image->filename)?>">
-                              <img src="{{ $image->url }}" alt="Nature and sunrise" style="width: 100%; ">
+                          <div class = "wide_wrapper text-center big-slider-image-container" >
+                            @foreach($project->images as $image)
+                            <div class="mySlides-<?php echo $project->name ?>" data-responsive="true" id = "wide-<?php echo md5($image->filename)?>">
+                              <img src="{{ $image->url }}" class="big-slider-image img-responsive" alt="Nature and sunrise">
                             </div>
                             @endforeach
 
@@ -146,6 +149,24 @@
     </div>
 </div>
 
+
+
+<!-- Youtube Modal -->
+<div class="modal fade" id="myYoutube" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-body">
+      
+        <iframe id="iframeYoutube" width="100%" height="300px" src="" frameborder="0" allowfullscreen></iframe> 
+        
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
 
 <script type="text/javascript">
@@ -181,7 +202,21 @@ $(document).ready(function() {
           $('.ajax-load').html('<h2>No more post left</h2>');
         }
     }
+    // Youtube popup
+    $(document).on("click",".youtube-btn",function(){
+      var link = $(this).attr('link');
+      showYoutube(link);
+    });
+    $("#myYoutube").on("hidden.bs.modal",function(){
+      $("#iframeYoutube").attr("src","#");
+    });
 
+    function showYoutube(src){
+      src = src.replace('watch?v=','embed/');
+      $("#iframeYoutube").attr("src",src);
+      $("#myYoutube").modal("show");
+      $('.modal-backdrop').css('position', 'relative');
+    }
     var token = $('input[name="ajax_token"]').val();
     $('.action-accept').click(function(){
       $.ajax({
@@ -396,7 +431,7 @@ body {
 .next {
   cursor: pointer;
   position: absolute;
-  top: 50%;
+  top: 30%;
   width: auto;
   padding: 16px;
   margin-top: -50px;
@@ -458,5 +493,29 @@ img.hover-shadow {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)
 }
 
+
+@media only screen and (min-width: 900px) {
+
+  .big-slider-image-container{
+    max-width : 500px; 
+    margin: 0 auto;
+  }
+  .big-slider-image{
+    width: auto; 
+    max-height: 600px;
+  }
+}
+@media only screen and (max-width: 899px) {
+
+  .big-slider-image-container{
+    width : 100%; 
+    height : 100%; 
+    margin: 0 auto
+  }
+/*  .big-slider-image{
+    max-width: 100%; 
+    height: 100%;
+  }*/
+}
 </style>
 @endsection
