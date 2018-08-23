@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\Paginator;
 
 use App\Mail\RejectingProject;
+use App\Mail\AcceptingProject;
 use Illuminate\Support\Facades\Mail;
 
 use App\Cat;
@@ -81,6 +82,15 @@ class ProjectController extends Controller
         $project = Project::find($id);
         $project->stat = '2';
         $project->save();   
+
+        //get user email
+        $project = Project::where('id', $id)->first();
+        $user_id = $project->user_id;
+        $user = User::where('id', $user_id)->first();
+
+        // Send Email
+        Mail::to($user->email)->send(new AcceptingProject($project->name, $user->vorname.' '.$user->name));
+
 
         return response()->json(array('msg'=> 'Success'), 200);
     } 
