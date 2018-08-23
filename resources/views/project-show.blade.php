@@ -65,8 +65,8 @@
                         <div class="modal-content">
                           <div class = "wide_wrapper" >
                           	@foreach($project->images as $image)
-                            <div class="mySlides-<?php echo $project->name ?>" data-responsive="true" style = "width : 100%;height : 100%;" id = "wide-<?php echo md5($image->filename)?>">
-                              <img src="{{ $image->url }}" alt="Nature and sunrise" style="width: 100%; ">
+                            <div class="mySlides-<?php echo $project->name ?>" data-responsive="true" style = "width : 100%;height : 100%; vertical-align:middle; text-align:center" id = "wide-<?php echo md5($image->filename)?>">
+                              <img src="{{ $image->url }}" class="img-fluid" alt="Nature and sunrise"  style="max-width: 900px; max-height: 600px; width: auto; height: auto; ">
                             </div>
                             @endforeach
 
@@ -266,7 +266,7 @@ body {
 .next {
   cursor: pointer;
   position: absolute;
-  top: 50%;
+  top: 30%;
   width: auto;
   padding: 16px;
   margin-top: -50px;

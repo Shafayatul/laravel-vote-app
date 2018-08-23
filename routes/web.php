@@ -30,11 +30,11 @@ Route::get('/project-show', function () {
 Route::get('/project-bewerten', function () {
     return view('project-bewerten');
 });
-
+/*
 Route::get('/project-freigeben', function () {
     return view('project-freigeben');
 });
-
+*/
 
 
 Auth::routes();
@@ -51,6 +51,8 @@ Route::post('/project-freigegeben', 'ProjectController@ProjectFreigegeben')->nam
 Route::get('/user-change', 'HomeController@change')->name('user-change');
 Route::post('user-change', 'ChangeController@change');
 Route::post('project-insert', 'ProjectController@insertProjectStepOne');
+Route::post('/project-accept-admin', 'ProjectController@acceptProject');
+Route::post('/project-reject-admin', 'ProjectController@rejectProject');
 Route::post('project-change', 'ProjectController@changeProject')->name('project-change');
 Route::post('/add-project', 'ProjectController@insertProject')->name('add-project');
 Route::post('/images-save', 'ProjectController@upload')->name('/images-save');

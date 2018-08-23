@@ -5,7 +5,10 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Pagination\Paginator;
-// use App\Image;
+
+use App\Mail\RejectingProject;
+use Illuminate\Support\Facades\Mail;
+
 use App\Cat;
 use App\User;
 use App\Project;
@@ -52,6 +55,35 @@ class ProjectController extends Controller
       return view('project-insert-three', get_defined_vars())->with(['user' => $user]);
 
     }
+
+    public function rejectProject(Request $data) {
+
+        $id = $data->id;
+        $project = Project::find($id);
+        $project->stat = '3';
+        $project->save();  
+
+        //get user email
+        $project = Project::where('id', $id)->first();
+        $user_id = $project->user_id;
+        $user = User::where('id', $user_id)->first();
+
+        // Send Email
+        Mail::to($user->email)->send(new RejectingProject($data->emailBody, $project->name, $user->vorname.' '.$user->name));
+
+        return response()->json(array('msg'=> 'Success'), 200);
+    } 
+
+
+    public function acceptProject(Request $data) {
+
+        $id = $data->id;
+        $project = Project::find($id);
+        $project->stat = '2';
+        $project->save();   
+
+        return response()->json(array('msg'=> 'Success'), 200);
+    } 
 
     public function changeProject(Request $data) {
 
@@ -247,6 +279,9 @@ class ProjectController extends Controller
         File::delete($thumb_filePath.$fileName);
         $wide_filePath = 'images/'.$user.'/'.$cat.'/';
         File::delete($wide_filePath.$fileName);
+
+        DB::table('Images')->where('filename', '=', $fileName)->delete();
+
       }
 
       DB::table('images')
@@ -309,20 +344,36 @@ class ProjectController extends Controller
       $pids = Count::pluck('project_id');
       $uids = Count::pluck('user_id');
 
+
+
+                        
+
       $projects = Project::whereNotIn('id', $pids)
                         ->whereNotIn('user_id', $uids)
                         ->where('stat', '=', '2')
                         ->with('images')
                         ->paginate(5);
 
+
       if($request->ajax()) {
           return [
               'projects' => view('ajax-load')->with(compact('projects', 'user','cat'))->render(),
               'next_page' => $projects->nextPageUrl()
           ];
+      }else{
+        $count = Project::whereNotIn('id', $pids)
+                        ->whereNotIn('user_id', $uids)
+                        ->where('stat', '=', '2')
+                        ->with('images')
+                        ->count();
+        if ($count<=5) {
+          $do_work = 0;
+        }else{
+          $do_work = 1;
+        }
       }
 
-      return view('project-show-rater', compact('projects', 'user','cat'));
+      return view('project-show-rater', compact('projects', 'user','cat', 'do_work'));
 
     }
 

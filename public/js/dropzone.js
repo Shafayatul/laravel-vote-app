@@ -2806,7 +2806,8 @@ var Dropzone = function (_Emitter) {
   }, {
     key: "submitRequest",
     value: function submitRequest(xhr, formData, files) {
-      xhr.send(formData);
+
+        xhr.send(formData);
     }
 
     // Called internally when processing is finished.

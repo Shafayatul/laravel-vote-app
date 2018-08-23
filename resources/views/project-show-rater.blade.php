@@ -36,14 +36,14 @@
                           </div>
                           <br>
                           <div class="row">
-                          	<?php $imageCount = 0;?>
+                            <?php $imageCount = 0;?>
                           @foreach($project->images as $image)
 
-                          	<?php $imageCount ++; ?>
+                            <?php $imageCount ++; ?>
 
-                      		  <div class="column" id = "thumb-<?php echo md5($image->filename)?>">
-                      		    <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:100%;height:100%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
-                      		  </div>
+                            <div class="column" id = "thumb-<?php echo md5($image->filename)?>">
+                              <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:100%;height:100%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
+                            </div>
 
                           @endforeach
 
@@ -72,10 +72,10 @@
                       <div id="myModal-{{$project->name}}" class="modal">
                         <span class="close cursor" onclick="closeModal('{{$project->name}}')">&times;</span>
                         <div class="modal-content">
-                          <div class = "wide_wrapper" >
-                          	@foreach($project->images as $image)
-                            <div class="mySlides-<?php echo $project->name ?>" data-responsive="true" style = "width : 100%;height : 100%;" id = "wide-<?php echo md5($image->filename)?>">
-                              <img src="{{ $image->url }}" alt="Nature and sunrise" style="width: 100%; ">
+                          <div class = "wide_wrapper text-center big-slider-image-container" >
+                            @foreach($project->images as $image)
+                            <div class="mySlides-<?php echo $project->name ?>" data-responsive="true" id = "wide-<?php echo md5($image->filename)?>">
+                              <img src="{{ $image->url }}" class="big-slider-image img-responsive" alt="Nature and sunrise">
                             </div>
                             @endforeach
 
@@ -87,22 +87,22 @@
                           </div>
 
                           <div class = "clearfix">
-                          	<?php $imageCount = 0;?>
-                      	    @foreach($project->images as $image)
-                      	    <?php $imageCount ++; ?>
+                            <?php $imageCount = 0;?>
+                            @foreach($project->images as $image)
+                            <?php $imageCount ++; ?>
                             @if ($user->rolle === 0)
-                      	    <div class="column clearfix" id = "slide-<?php echo md5($image->filename)?>">
+                            <div class="column clearfix" id = "slide-<?php echo md5($image->filename)?>">
                               <div class = "clearfix text-center" style = "background : grey">
                                 <span class="glyphicon glyphicon-trash" onclick="del('{{$image->filename}}' , '<?php echo md5($image->filename)?>')"></span>
                               </div>
                               <div class = "image-wrapper">
-                        	      <img id = "slideimg-<?php echo md5($image->filename)?>" class="demo-<?php echo $project->name ?> cursor" src="{{ $image->thumb_url }}" style="width:100%" onclick="currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" alt="Nature and sunrise">
+                                <img id = "slideimg-<?php echo md5($image->filename)?>" class="demo-<?php echo $project->name ?> cursor" src="{{ $image->thumb_url }}" style="width:100%" onclick="currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" alt="Nature and sunrise">
                               </div>
-                      	    </div>
+                            </div>
                             @endif
-                      	    @endforeach
+                            @endforeach
 
-                      	</div>
+                        </div>
 
                         </div>
                         <div style = "height : 80px"></div>
@@ -190,8 +190,8 @@ function closeModal(projectName) {
 }
 var slideIndex = {};
 <?php foreach($projects as $project){ ?>
-	slideIndex['<?php echo $project->name ?>'] = 1;
-	showSlides(slideIndex['<?php echo $project->name ?>'] , '<?php echo $project->name ?>');
+  slideIndex['<?php echo $project->name ?>'] = 1;
+  showSlides(slideIndex['<?php echo $project->name ?>'] , '<?php echo $project->name ?>');
 <?php }?>
 
 
@@ -323,7 +323,7 @@ body {
 .next {
   cursor: pointer;
   position: absolute;
-  top: 50%;
+  top: 30%;
   width: auto;
   padding: 16px;
   margin-top: -50px;
@@ -383,6 +383,31 @@ img.hover-shadow {
 
 .hover-shadow:hover {
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19)
+}
+
+
+@media only screen and (min-width: 900px) {
+
+  .big-slider-image-container{
+    max-width : 500px; 
+    margin: 0 auto;
+  }
+  .big-slider-image{
+    width: auto; 
+    max-height: 600px;
+  }
+}
+@media only screen and (max-width: 899px) {
+
+  .big-slider-image-container{
+    width : 100%; 
+    height : 100%; 
+    margin: 0 auto
+  }
+/*  .big-slider-image{
+    max-width: 100%; 
+    height: 100%;
+  }*/
 }
 
 </style>

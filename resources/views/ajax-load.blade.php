@@ -54,10 +54,10 @@ Projectbeschreibung: {{$project->beschreibung }}
                       <div id="myModal-{{$project->name}}" class="modal">
                         <span class="close cursor" onclick="closeModal('{{$project->name}}')">&times;</span>
                         <div class="modal-content">
-                          <div class = "wide_wrapper" >
-                          	@foreach($project->images as $image)
-                            <div class="mySlides-<?php echo $project->name ?>" data-responsive="true" style = "width : 100%;height : 100%;" id = "wide-<?php echo md5($image->filename)?>">
-                              <img src="{{ $image->url }}" alt="Nature and sunrise" style="width: 100%; ">
+                          <div class = "wide_wrapper text-center big-slider-image-container" >
+                            @foreach($project->images as $image)
+                            <div class="mySlides-<?php echo $project->name ?>" data-responsive="true" id = "wide-<?php echo md5($image->filename)?>">
+                              <img src="{{ $image->url }}" class="big-slider-image img-responsive" alt="Nature and sunrise">
                             </div>
                             @endforeach
 
@@ -75,7 +75,7 @@ Projectbeschreibung: {{$project->beschreibung }}
                             @if ($user->rolle === 0)
                       	    <div class="column clearfix" id = "slide-<?php echo md5($image->filename)?>">
                               <div class = "clearfix text-center" style = "background : grey">
-                                <span class="glyphicon glyphicon-trash" onclick="del('{{$image->filename}}' , '<?php echo md5($image->filename)?>')"></span>
+                                
                               </div>
                               <div class = "image-wrapper">
                         	      <img id = "slideimg-<?php echo md5($image->filename)?>" class="demo-<?php echo $project->name ?> cursor" src="{{ $image->thumb_url }}" style="width:100%" onclick="currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" alt="Nature and sunrise">
