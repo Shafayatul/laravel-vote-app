@@ -8,9 +8,9 @@
                 <div class="card-header">{{ __('Reset Password') }}</div>
 
                 <div class="card-body">
-                    @if (session('status'))
+                    @if (session('alert-success'))
                         <div class="alert alert-success">
-                            {{ session('status') }}
+                            {{ session('alert-success') }}
                         </div>
                     @endif
 

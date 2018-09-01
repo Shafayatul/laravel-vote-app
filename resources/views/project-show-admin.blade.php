@@ -228,7 +228,7 @@ $(document).ready(function() {
               _token : token
           },
           success: function(response){
-            alert("Project has been successfully accepted.");
+            // alert("Project has been successfully accepted.");
             location.reload();
           }
       });
@@ -259,7 +259,7 @@ $(document).ready(function() {
               _token : token
           },
           success: function(response){
-            alert("Project has been rejected.");
+            // alert("Project has been rejected.");
             location.reload();
           }
       });

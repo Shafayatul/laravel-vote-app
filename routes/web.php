@@ -40,6 +40,7 @@ Route::get('/project-freigeben', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/project/add-image/{project_id}/{cat_id}', 'ProjectController@AddImage');
 Route::get('/project-show-rater', 'ProjectController@ProjectBewerten')->name('project-show-rater');
 Route::get('/project-freigeben', 'ProjectController@ProjectFreigeben')->name('project-freigeben');
 Route::get('/project-show', 'ProjectController@ProjectShow')->name('project-show');

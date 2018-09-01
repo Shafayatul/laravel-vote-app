@@ -1,7 +1,11 @@
 @extends('layouts.app')
 
 @section('content')
-
+@if(session()->has('alert-success'))
+    <div class="alert alert-success">
+        {{ session()->get('alert-success') }}
+    </div>
+@endif
 <div class="container-fluid">
   <div class="row justify-content-center">
       <div class="col-md-8">

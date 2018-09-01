@@ -19,6 +19,7 @@ use Image;
 use storage;
 use File;
 use Log;
+use Session;
 
 class ProjectController extends Controller
 {
@@ -72,6 +73,8 @@ class ProjectController extends Controller
         // Send Email
         Mail::to($user->email)->send(new RejectingProject($data->emailBody, $project->name, $user->vorname.' '.$user->name));
 
+        Session::flash('alert-success','Project has been successfully rejected.');
+
         return response()->json(array('msg'=> 'Success'), 200);
     } 
 
@@ -91,6 +94,7 @@ class ProjectController extends Controller
         // Send Email
         Mail::to($user->email)->send(new AcceptingProject($project->name, $user->vorname.' '.$user->name));
 
+        Session::flash('alert-success','Project has been successfully accepted.');
 
         return response()->json(array('msg'=> 'Success'), 200);
     } 
@@ -122,7 +126,7 @@ class ProjectController extends Controller
       return redirect()->route("project-show")->with('alert-success', 'Das Projekt mit der Projekt ID: ' . $projectID . ' wurde erfolgreich gelöscht!');
 
     }
-    }
+  }
 
     public function ProjectChange(Request $data) {
 
@@ -182,7 +186,30 @@ class ProjectController extends Controller
           'updated_at' => \Carbon\Carbon::now()->toDateTimeString()
       ]);
 
+      Session::flash('alert-success','Project has been added. Please add images for the project');
+
       return view('project-insert-picture', get_defined_vars())->with(['user' => $user]);
+    }
+
+
+    public function AddImage($project_id, $cat_id) {
+
+      $cats = DB::table('cats')->where('id', '=', $cat_id)->first();
+      
+      $userId = Auth::id();
+      $user = Auth::user();
+
+      //max image = 5 - current image
+      $current_image_number = DB::table('images')->where('project_id', $project_id)->count();
+      $max_img = 5-$current_image_number;
+
+      if ($max_img <0 ) {
+        $max_img = 0;
+      }
+
+
+
+      return view('project-add-new-picture', get_defined_vars())->with(['user' => $user, 'max_img' => $max_img]);
     }
 
     public function upload(Request $request)
@@ -240,6 +267,7 @@ class ProjectController extends Controller
       ]);
 
 
+      Session::flash('alert-success','Images added to project.');
 
 
       if ($upload_success) {

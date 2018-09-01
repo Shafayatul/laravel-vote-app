@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use DB;
+use Session;
 
 class ChangeController extends Controller
 {
@@ -84,7 +85,7 @@ class ChangeController extends Controller
 
 
     //PUT HERE AFTER YOU SAVE
-    \Session::flash('flash_message','successfully saved.');
+    Session::flash('alert-success','Change has been successfully saved.');
 
     return redirect()->route("home");
   }

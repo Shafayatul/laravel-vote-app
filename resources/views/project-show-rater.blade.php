@@ -96,9 +96,7 @@
                             <?php $imageCount ++; ?>
                             @if ($user->rolle === 0)
                             <div class="column clearfix" id = "slide-<?php echo md5($image->filename)?>">
-                              <div class = "clearfix text-center" style = "background : grey">
-                                <span class="glyphicon glyphicon-trash" onclick="del('{{$image->filename}}' , '<?php echo md5($image->filename)?>')"></span>
-                              </div>
+                              
                               <div class = "image-wrapper">
                                 <img id = "slideimg-<?php echo md5($image->filename)?>" class="demo-<?php echo $project->name ?> cursor" src="{{ $image->thumb_url }}" style="width:100%" onclick="currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" alt="Nature and sunrise">
                               </div>

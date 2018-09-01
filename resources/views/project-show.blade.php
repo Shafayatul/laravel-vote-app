@@ -60,6 +60,8 @@
                          <button type="submit" class="btn btn-primary" value = "change" name="submit">
                              {{ __('Ändern') }}
                          </button>
+                         <a href="{{ url('/project/add-image/'.$project->id.'/'.$project->cat_id) }}" class="btn btn-primary" >Add Image</a>
+
                          @endif
                        </form>
 
