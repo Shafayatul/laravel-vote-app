@@ -47,7 +47,6 @@
         maxFiles: 5,
         paramName: 'file',
         maxFilesize: 2, // MB
-        maxFiles: max,
         acceptedFiles: ".jpeg,.jpg,.png,.gif",
         addRemoveLinks: true,
 
