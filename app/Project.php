@@ -3,11 +3,18 @@
 namespace App;
 
 use Illuminate\Database\Eloquent\Model;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class Project extends Model
 {
+  use LogsActivity;
+
+  protected $table = 'projects';
+  protected $primaryKey = 'id';
 
   protected $fillable = ['name','user_id','cat_id', 'beschreibung', 'youtube', 'copyright','testimonial','check','projektname'];
+
+  protected static $logAttributes = ['name','user_id','cat_id', 'beschreibung', 'youtube', 'copyright','testimonial','check','projektname'];
 
   /*
   public function user() {

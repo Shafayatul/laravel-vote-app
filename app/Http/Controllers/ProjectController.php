@@ -12,9 +12,12 @@ use Illuminate\Support\Facades\Mail;
 
 use App\Cat;
 use App\User;
+use App\InvoiceRow;
+use App\Invoice;
 use App\Project;
 use App\Count;
 use DB;
+use PDF;
 use Image;
 use storage;
 use File;
@@ -37,12 +40,52 @@ class ProjectController extends Controller
     public function insertProjectStepOne(Request $data) {
 
         $user = Auth::user();
+
         $cat_id = $data->input("cat_id");
 
         $cats = DB::table('cats')->where('id', '=', $cat_id)->first();
 
         return view('project-insert-two', get_defined_vars())->with(['user' => $user]);
 
+    }
+
+
+    public function invoice(Request $data) {
+
+        $user = Auth::user();
+        
+        $users = User::paginate(15);
+        
+        return view('invoice', get_defined_vars())->with(['user' => $user, 'users' => $users ]);
+
+    }
+
+
+    public function pdf_download($id) {
+
+        $user = User::where('id', $id)->first();
+        
+        $projects = Project::where('user_id', $id)->where('stat', '2')->get();
+        $invoice_row_ids = "";
+
+        foreach ($projects as $project) {
+
+          if(InvoiceRow::where('project_id', $project->id)->count()==0){
+            $invoice_row = InvoiceRow::create(['project_id'=>$project->id, 'name'=>$project->name, 'group'=>$project->group]);
+          }else{
+            $invoice_row = InvoiceRow::where('project_id', $project->id)->first();
+          }
+
+          $invoice_row_ids .= $invoice_row->id.',';
+        }
+        $invoice_row_ids = rtrim($invoice_row_ids, ',');
+        $date = date("Y-m-d");
+
+        Invoice::create(['user_id'=>$user->id, 'invoice_row_ids'=>$invoice_row_ids, 'date'=>$date]);
+
+
+        $pdf = PDF::loadView('pdf.invoice', compact('projects', 'user', 'date'));
+        return $pdf->download('Invoice.pdf');
     }
 
 

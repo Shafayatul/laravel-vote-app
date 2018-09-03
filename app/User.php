@@ -5,9 +5,11 @@ namespace App;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use Spatie\Activitylog\Traits\LogsActivity;
 
 class User extends Authenticatable
 {
+    use LogsActivity;
     use Notifiable;
 
     /**
@@ -16,6 +18,9 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
+        'name', 'email', 'password','vorname','firma','anr','agb','newsletter'
+    ];
+    protected static $logAttributes = [
         'name', 'email', 'password','vorname','firma','anr','agb','newsletter'
     ];
 
