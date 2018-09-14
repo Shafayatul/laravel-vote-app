@@ -49,7 +49,15 @@
             <br>
             Wien, {{$date}}
             <br>
-            AWA-{{$year}}-{{$invoice->id}}
+            @if($invoice->id < 10)
+                AWA-{{$year}}-00{{$invoice->id}}
+            @elseif($invoice->id < 100)
+                AWA-{{$year}}-0{{$invoice->id}}
+            @else
+                AWA-{{$year}}-{{$invoice->id}}
+            @endif
+
+            
             <br>
             <br>
         </div>
@@ -90,6 +98,7 @@
                 @php
                     $group_array = [];
                     $netto = 0;
+                    $first_project = true;
                 @endphp
                 @foreach($projects as $project)
                     <tr>
@@ -101,9 +110,10 @@
                             @php
                                 if(in_array($project->group, $group_array)){
                                     $price = 36;
-                                }elseif($project->group==1){
+                                }elseif($first_project){
                                     $price = 96;
                                     array_push($group_array, $project->group);
+                                    $first_project = false;
                                 }else{
                                     $price = 55;
                                     array_push($group_array, $project->group);

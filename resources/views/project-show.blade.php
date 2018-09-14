@@ -48,22 +48,24 @@
 
                           </div>
                           <br>
-                      <form method="POST" action="{{ route('project-change') }}">
-                          @csrf
-                          {{ Form::hidden('projectID', $project->id) }}
-                          {{ Form::hidden('catID', $project->cat_id) }}
+                          @if($project->stat != 2)
+                            <form method="POST" action="{{ route('project-change') }}">
+                                @csrf
+                                {{ Form::hidden('projectID', $project->id) }}
+                                {{ Form::hidden('catID', $project->cat_id) }}
 
-                          @if ($user->rolle === 0 || $user->rolle === 9)
-                         <button type="submit" class="btn btn-primary" value = "delete" name="submit">
-                             {{ __('Löschen') }}
-                         </button>
-                         <button type="submit" class="btn btn-primary" value = "change" name="submit">
-                             {{ __('Ändern') }}
-                         </button>
-                         <a href="{{ url('/project/add-image/'.$project->id.'/'.$project->cat_id) }}" class="btn btn-primary" >Add Image</a>
+                                @if ($user->rolle === 0 || $user->rolle === 9)
+                               <button type="submit" class="btn btn-primary" value = "delete" name="submit">
+                                   {{ __('Löschen') }}
+                               </button>
+                               <button type="submit" class="btn btn-primary" value = "change" name="submit">
+                                   {{ __('Ändern') }}
+                               </button>
+                               <a href="{{ url('/project/add-image/'.$project->id.'/'.$project->cat_id) }}" class="btn btn-primary" >Add Image</a>
 
-                         @endif
-                       </form>
+                               @endif
+                            </form>
+                          @endif
 
                       <div id="myModal-{{$project->name}}" class="modal">
                         <span class="close cursor" onclick="closeModal('{{$project->name}}')">&times;</span>

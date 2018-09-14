@@ -17,6 +17,7 @@ class CreateInvoicesTable extends Migration
             $table->integer('user_id')->nullable();
             $table->date('date')->nullable();
             $table->string('project_ids');
+            $table->boolean('is_paid')->default(0);
             $table->timestamps();
         });
     }

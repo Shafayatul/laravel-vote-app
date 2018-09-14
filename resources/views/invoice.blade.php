@@ -20,16 +20,30 @@
 					        <th>#</th>
 					        <th>Name</th>
 					        <th>Email</th>
+					        <th>Payment</th>
 					        <th>Download Invoice</th>
 					      </tr>
 					    </thead>
 					    <tbody>
-					    	@foreach($users as $single_user)
+					    	@foreach($invoices as $invoice)
 						      <tr>
-						      	<td>{{$single_user->id}}</td>
-						        <td>{{$single_user->vorname}} {{$single_user->name}}</td>
-						        <td>{{$single_user->email}}</td>
-						        <td> <a href="{{ url('/downlaod/pdf/'.$single_user->id) }}" download="download"> <button class="btn btn-primary"> Downlaod</button></a> </td>
+						      	<td>{{ $invoice->id}}</td>
+						        <td>{{ $users_name[$invoice->user_id] }}</td>
+						        <td>{{ $users_email[$invoice->user_id] }}</td>
+						        <td>
+						        	@if($invoice->is_paid == 0)
+						        		Not Paid
+						        	@else
+						        		Paid
+						        	@endif
+						        </td>
+						        <td> 
+						        	<a href="{{ url('/downlaod/pdf/'.$invoice->user_id) }}" download="download"> <button class="btn btn-primary"> Downlaod</button></a> 
+						        	@if($invoice->is_paid == 0)
+						        		<button class="btn btn-primary action-paid" id="{{$invoice->id}}"> Accept Payment</button>
+						        	@endif
+
+						        </td>
 						      </tr>
 						    @endforeach
 					    </tbody>
@@ -37,7 +51,7 @@
 
 					  <div class="row">
 					  	<div class="col-sm-12" >
-					  		{{ $users->links() }}
+					  		{{ $invoices->links() }}
 					  	</div>
 					  </div>
 
@@ -46,8 +60,28 @@
               </div>
             </div>
 </div>
-
+<input type = "hidden" name = "ajax_token" value = "{{csrf_token()}}">
 <script src="http://code.jquery.com/jquery-1.5.js"></script>
 
+<script type="text/javascript">
 
+$(document).ready(function(){
+	$('.action-paid').click(function(){
+		var token = $('input[name="ajax_token"]').val();
+		$.ajax({
+			url: '/invoice-paid',
+			type: 'POST',
+			data: {
+			  id : $(this).attr('id'),
+			  _token : token
+			},
+			success: function(response){
+				console.log(response);
+				// alert("Project has been successfully accepted.");
+				location.reload();
+			}
+		});
+    });
+});
+</script>
 @endsection

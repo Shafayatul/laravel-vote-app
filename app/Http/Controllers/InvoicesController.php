@@ -5,11 +5,28 @@ namespace App\Http\Controllers;
 use App\Http\Requests;
 use App\Http\Controllers\Controller;
 
+use Session;
 use App\Invoice;
 use Illuminate\Http\Request;
 
 class InvoicesController extends Controller
 {
+
+
+
+    public function invoicePaid(Request $data) {
+
+        $id = $data->id;
+        $invoice = Invoice::find($id);
+        $invoice->is_paid = 1;
+        $invoice->save();   
+
+        Session::flash('alert-success','Invoice has been successfully paid.');
+
+        return response()->json(array('msg'=> 'Success'), 200);
+    } 
+
+
     /**
      * Display a listing of the resource.
      *

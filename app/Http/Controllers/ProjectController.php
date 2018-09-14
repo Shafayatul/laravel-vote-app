@@ -12,7 +12,6 @@ use Illuminate\Support\Facades\Mail;
 
 use App\Cat;
 use App\User;
-use App\InvoiceRow;
 use App\Invoice;
 use App\Project;
 use App\Count;
@@ -53,10 +52,13 @@ class ProjectController extends Controller
     public function invoice(Request $data) {
 
         $user = Auth::user();
+
+        $invoices = Invoice::latest()->paginate(20);
         
-        $users = User::paginate(15);
-        
-        return view('invoice', get_defined_vars())->with(['user' => $user, 'users' => $users ]);
+        $users_email = User::pluck('email', 'id')->all();
+        $users_name = User::pluck('name', 'id')->all();
+
+        return view('invoice', get_defined_vars())->with(['user' => $user, 'invoices' => $invoices, 'users_email' => $users_email, 'users_name' => $users_name ]);
 
     }
 
@@ -75,7 +77,12 @@ class ProjectController extends Controller
         $date = date("Y-m-d");
         $year = date("Y");
 
-        $invoice = Invoice::create(['user_id'=>$user->id, 'project_ids'=>$project_ids, 'date'=>$date]);
+        $count = Invoice::where('project_ids', $project_ids)->where('user_id', $user->id)->count();
+        if ($count == 0) {
+          $invoice = Invoice::create(['user_id'=>$user->id, 'project_ids'=>$project_ids, 'date'=>$date]);
+        }else{
+          $invoice = Invoice::where('project_ids', $project_ids)->where('user_id', $user->id)->first();
+        }
 
 
         $pdf = PDF::loadView('pdf.invoice', compact('projects', 'user', 'date', 'invoice', 'year'));
@@ -84,7 +91,6 @@ class ProjectController extends Controller
 
     public function pdf_download($id) {
 
-      Log::debug($id);
 
         $user = User::where('id', $id)->first();
         
@@ -98,7 +104,12 @@ class ProjectController extends Controller
         $date = date("Y-m-d");
         $year = date("Y");
 
-        $invoice = Invoice::create(['user_id'=>$user->id, 'project_ids'=>$project_ids, 'date'=>$date]);
+        $count = Invoice::where('project_ids', $project_ids)->where('user_id', $id)->count();
+        if ($count == 0) {
+          $invoice = Invoice::create(['user_id'=>$id, 'project_ids'=>$project_ids, 'date'=>$date]);
+        }else{
+          $invoice = Invoice::where('project_ids', $project_ids)->where('user_id', $id)->first();
+        }
 
 
         $pdf = PDF::loadView('pdf.invoice', compact('projects', 'user', 'date', 'invoice', 'year'));

@@ -55,6 +55,7 @@ Route::post('/project-freigegeben', 'ProjectController@ProjectFreigegeben')->nam
 Route::get('/user-change', 'HomeController@change')->name('user-change');
 Route::post('user-change', 'ChangeController@change');
 Route::post('project-insert', 'ProjectController@insertProjectStepOne');
+Route::post('/invoice-paid', 'InvoicesController@invoicePaid');
 Route::post('/project-accept-admin', 'ProjectController@acceptProject');
 Route::post('/project-reject-admin', 'ProjectController@rejectProject');
 Route::post('/project-delete-admin', 'ProjectController@deleteProject');
