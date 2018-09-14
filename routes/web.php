@@ -40,6 +40,7 @@ Route::get('/project-freigeben', function () {
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/downlaod/my-invoice', 'ProjectController@my_pdf_download');
 Route::get('/downlaod/pdf/{id}', 'ProjectController@pdf_download');
 Route::get('/invoice', 'ProjectController@invoice');
 Route::get('/project/add-image/{project_id}/{cat_id}', 'ProjectController@AddImage');
@@ -56,6 +57,7 @@ Route::post('user-change', 'ChangeController@change');
 Route::post('project-insert', 'ProjectController@insertProjectStepOne');
 Route::post('/project-accept-admin', 'ProjectController@acceptProject');
 Route::post('/project-reject-admin', 'ProjectController@rejectProject');
+Route::post('/project-delete-admin', 'ProjectController@deleteProject');
 Route::post('project-change', 'ProjectController@changeProject')->name('project-change');
 Route::post('/add-project', 'ProjectController@insertProject')->name('add-project');
 Route::post('/images-save', 'ProjectController@upload')->name('/images-save');

@@ -24,6 +24,7 @@
 
                       <button class="btn btn-primary action-accept" id="{{$project->id}}">Accept</button>
                       <button class="btn btn-primary action-reject" id="{{$project->id}}">Reject</button>
+                      <button class="btn btn-primary action-delete" id="{{$project->id}}">Delete</button>
 
                       <br>
                       <br>
@@ -62,7 +63,7 @@
                           <br>
 
 
-                          <form method="POST" action="{{ route('project-freigegeben') }}">
+                          {{-- <form method="POST" action="{{ route('project-freigegeben') }}">
                               @csrf
                                 {{ Form::hidden('project_id', $project->id) }}
                                 <label for="Cat"></label>
@@ -71,7 +72,7 @@
                                       <option value="3">Zurückweisen</option>
                                       <option value="1">Löschen</option>
                                     </select>
-                              </form>
+                              </form> --}}
 
                       <div id="myModal-{{$project->name}}" class="modal">
                         <span class="close cursor" onclick="closeModal('{{$project->name}}')">&times;</span>
@@ -149,7 +150,7 @@
     </div>
 </div>
 
-
+<input type="hidden"  id="do_work" value="{{$do_work}}">
 
 <!-- Youtube Modal -->
 <div class="modal fade" id="myYoutube" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -179,13 +180,14 @@ $(document).ready(function() {
     function fetchtickets() {
 
         var page = $('.endless-pagination').data('next-page');
+        var doWork = $('#do_work').val();
 
-        if(page !== null) {
+        if((page !== null) && (doWork=='1')) {
 
             clearTimeout( $.data( this, "scrollCheck" ) );
 
             $.data( this, "scrollCheck", setTimeout(function() {
-                var scroll_position_for_tickets_load = $(window).height() + $(window).scrollTop() + 100;
+                var scroll_position_for_tickets_load = $(window).height() + $(window).scrollTop() + 300;
                 $('.ajax-load').show();
 
                 if(scroll_position_for_tickets_load >= $(document).height()) {
@@ -195,7 +197,7 @@ $(document).ready(function() {
                         $('.endless-pagination').data('next-page', data.next_page);
                     });
                 }
-            }, 350))
+            }, 1000))
 
         }else{
           $('.ajax-load').show();
@@ -221,6 +223,22 @@ $(document).ready(function() {
     $('.action-accept').click(function(){
       $.ajax({
           url: '/project-accept-admin',
+          type: 'POST',
+
+          data: {
+              id : $(this).attr('id'),
+              _token : token
+          },
+          success: function(response){
+            // alert("Project has been successfully accepted.");
+            location.reload();
+          }
+      });
+    });
+
+    $('.action-delete').click(function(){
+      $.ajax({
+          url: '/project-delete-admin',
           type: 'POST',
 
           data: {

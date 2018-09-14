@@ -61,30 +61,47 @@ class ProjectController extends Controller
     }
 
 
+    public function my_pdf_download() {
+
+        $user = Auth::user();
+        
+        $projects = Project::where('user_id', $user->id)->where('stat', '2')->get();
+        $project_ids = "";
+
+        foreach ($projects as $project) {
+          $project_ids .= $project->id.',';
+        }
+        $project_ids = rtrim($project_ids, ',');
+        $date = date("Y-m-d");
+        $year = date("Y");
+
+        $invoice = Invoice::create(['user_id'=>$user->id, 'project_ids'=>$project_ids, 'date'=>$date]);
+
+
+        $pdf = PDF::loadView('pdf.invoice', compact('projects', 'user', 'date', 'invoice', 'year'));
+        return $pdf->download('Invoice.pdf');
+    }
+
     public function pdf_download($id) {
+
+      Log::debug($id);
 
         $user = User::where('id', $id)->first();
         
         $projects = Project::where('user_id', $id)->where('stat', '2')->get();
-        $invoice_row_ids = "";
+        $project_ids = "";
 
         foreach ($projects as $project) {
-
-          if(InvoiceRow::where('project_id', $project->id)->count()==0){
-            $invoice_row = InvoiceRow::create(['project_id'=>$project->id, 'name'=>$project->name, 'group'=>$project->group]);
-          }else{
-            $invoice_row = InvoiceRow::where('project_id', $project->id)->first();
-          }
-
-          $invoice_row_ids .= $invoice_row->id.',';
+          $project_ids .= $project->id.',';
         }
-        $invoice_row_ids = rtrim($invoice_row_ids, ',');
+        $project_ids = rtrim($project_ids, ',');
         $date = date("Y-m-d");
+        $year = date("Y");
 
-        Invoice::create(['user_id'=>$user->id, 'invoice_row_ids'=>$invoice_row_ids, 'date'=>$date]);
+        $invoice = Invoice::create(['user_id'=>$user->id, 'project_ids'=>$project_ids, 'date'=>$date]);
 
 
-        $pdf = PDF::loadView('pdf.invoice', compact('projects', 'user', 'date'));
+        $pdf = PDF::loadView('pdf.invoice', compact('projects', 'user', 'date', 'invoice', 'year'));
         return $pdf->download('Invoice.pdf');
     }
 
@@ -117,6 +134,27 @@ class ProjectController extends Controller
         Mail::to($user->email)->send(new RejectingProject($data->emailBody, $project->name, $user->vorname.' '.$user->name));
 
         Session::flash('alert-success','Project has been successfully rejected.');
+
+        return response()->json(array('msg'=> 'Success'), 200);
+    } 
+
+
+    public function deleteProject(Request $data) {
+
+        $id = $data->id;
+        $project = Project::find($id);
+        $project->stat = '1';
+        $project->save();  
+
+/*        //get user email
+        $project = Project::where('id', $id)->first();
+        $user_id = $project->user_id;
+        $user = User::where('id', $user_id)->first();
+
+        // Send Email
+        Mail::to($user->email)->send(new RejectingProject($data->emailBody, $project->name, $user->vorname.' '.$user->name));*/
+
+        Session::flash('alert-success','Project has been successfully deleted.');
 
         return response()->json(array('msg'=> 'Success'), 200);
     } 
@@ -437,8 +475,21 @@ class ProjectController extends Controller
 
 
       if($request->ajax()) {
+
+          $count = Project::whereNotIn('id', $pids)
+                        ->whereNotIn('user_id', $uids)
+                        ->where('stat', '=', '2')
+                        ->with('images')
+                        ->count();
+          if ( ceil($count/5) == $request->input("page")) {
+            $do_work = 0;
+          }else{
+            $do_work = 1;
+          }
+
+        
           return [
-              'projects' => view('ajax-load')->with(compact('projects', 'user','cat'))->render(),
+              'projects' => view('ajax-load')->with(compact('projects', 'user','cat','do_work'))->render(),
               'next_page' => $projects->nextPageUrl()
           ];
       }else{
@@ -447,7 +498,7 @@ class ProjectController extends Controller
                         ->where('stat', '=', '2')
                         ->with('images')
                         ->count();
-        if ($count<=5) {
+        if ( ceil($count/5) == $request->input("page")) {
           $do_work = 0;
         }else{
           $do_work = 1;
@@ -494,14 +545,34 @@ class ProjectController extends Controller
                         ->with('images')
                         ->paginate(5);
 
+
       if($request->ajax()) {
+
+          $count = Project::where('stat', '=', '0')
+                          ->with('images')
+                          ->count();
+          if ( ceil($count/5) == $request->input("page")) {
+            $do_work = 0;
+          }else{
+            $do_work = 1;
+          }
+
           return [
-              'projects' => view('ajax-load-admin')->with(compact('projects', 'user','cat'))->render(),
+              'projects' => view('ajax-load-admin')->with(compact('projects', 'user','cat', 'do_work'))->render(),
               'next_page' => $projects->nextPageUrl()
           ];
+      }else{
+          $count = Project::where('stat', '=', '0')
+                          ->with('images')
+                          ->count();
+          if ( ceil($count/5) == $request->input("page")) {
+            $do_work = 0;
+          }else{
+            $do_work = 1;
+          }
       }
 
-      return view('project-show-admin', compact('projects', 'user','cat'));
+      return view('project-show-admin', compact('projects', 'user','cat', 'do_work'));
 
     }
 

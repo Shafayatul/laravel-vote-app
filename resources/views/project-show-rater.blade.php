@@ -139,7 +139,7 @@
   </div>
 </div>
 
-
+<input type="hidden"  id="do_work" value="{{$do_work}}">
 
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
@@ -159,13 +159,14 @@ $(document).ready(function() {
     function fetchtickets() {
 
         var page = $('.endless-pagination').data('next-page');
+        var doWork = $('#do_work').val();
 
-        if(page !== null) {
+        if((page !== null) && (doWork=='1')) {
 
             clearTimeout( $.data( this, "scrollCheck" ) );
 
             $.data( this, "scrollCheck", setTimeout(function() {
-                var scroll_position_for_tickets_load = $(window).height() + $(window).scrollTop() + 100;
+                var scroll_position_for_tickets_load = $(window).height() + $(window).scrollTop() + 300;
                 $('.ajax-load').show();
 
                 if(scroll_position_for_tickets_load >= $(document).height()) {
@@ -175,7 +176,7 @@ $(document).ready(function() {
                         $('.endless-pagination').data('next-page', data.next_page);
                     });
                 }
-            }, 350))
+            }, 1000))
 
         }else{
           $('.ajax-load').show();

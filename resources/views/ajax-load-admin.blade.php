@@ -33,7 +33,7 @@ Projectbeschreibung: {{$project->beschreibung }}
                           <br>
 
 
-                          <form method="POST" action="{{ route('project-freigegeben') }}">
+                          {{-- <form method="POST" action="{{ route('project-freigegeben') }}">
                               @csrf
                                 {{ Form::hidden('project_id', $project->id) }}
                                 <label for="Cat"></label>
@@ -42,7 +42,7 @@ Projectbeschreibung: {{$project->beschreibung }}
                                       <option value="3">Zurückweisen</option>
                                       <option value="1">Löschen</option>
                                     </select>
-                              </form>
+                              </form> --}}
 
                       <div id="myModal-{{$project->name}}" class="modal">
                         <span class="close cursor" onclick="closeModal('{{$project->name}}')">&times;</span>

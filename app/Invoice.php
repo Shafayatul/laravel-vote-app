@@ -27,8 +27,8 @@ class Invoice extends Model
      *
      * @var array
      */
-    protected $fillable = ['user_id', 'invoice_row_ids', 'date'];
-    protected static $logAttributes = ['user_id', 'invoice_row_ids', 'date'];
+    protected $fillable = ['user_id', 'project_ids', 'date'];
+    protected static $logAttributes = ['user_id', 'project_ids', 'date'];
 
     
 }

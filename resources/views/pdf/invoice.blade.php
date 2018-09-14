@@ -49,7 +49,7 @@
             <br>
             Wien, {{$date}}
             <br>
-            RE – AWA – 008
+            AWA-{{$year}}-{{$invoice->id}}
             <br>
             <br>
         </div>
