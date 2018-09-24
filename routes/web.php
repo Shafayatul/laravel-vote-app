@@ -30,11 +30,11 @@ Route::get('/project-show', function () {
 Route::get('/project-bewerten', function () {
     return view('project-bewerten');
 });
-/*
+
 Route::get('/project-freigeben', function () {
     return view('project-freigeben');
 });
-*/
+
 
 
 Auth::routes();
@@ -42,10 +42,12 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/downlaod/my-invoice', 'ProjectController@my_pdf_download');
 Route::get('/downlaod/pdf/{id}', 'ProjectController@pdf_download');
+Route::post('/register-new-user', 'ProjectController@registerNewUser');
 Route::get('/invoice', 'ProjectController@invoice');
 Route::get('/project/add-image/{project_id}/{cat_id}', 'ProjectController@AddImage');
 Route::get('/project-show-rater', 'ProjectController@ProjectBewerten')->name('project-show-rater');
 Route::get('/project-freigeben', 'ProjectController@ProjectFreigeben')->name('project-freigeben');
+Route::get('/admin-project-show/{project_stat_id}', 'ProjectController@adminProjectShow');
 Route::get('/project-show', 'ProjectController@ProjectShow')->name('project-show');
 Route::post('/change-project', 'ProjectController@ProjectChange')->name('change-project');
 Route::post('/project-rated', 'ProjectController@ProjectRated')->name('project-rated');
@@ -59,6 +61,7 @@ Route::post('/invoice-paid', 'InvoicesController@invoicePaid');
 Route::post('/project-accept-admin', 'ProjectController@acceptProject');
 Route::post('/project-reject-admin', 'ProjectController@rejectProject');
 Route::post('/project-delete-admin', 'ProjectController@deleteProject');
+Route::post('/project-jury-admin', 'ProjectController@juryProject');
 Route::post('project-change', 'ProjectController@changeProject')->name('project-change');
 Route::post('/add-project', 'ProjectController@insertProject')->name('add-project');
 Route::post('/images-save', 'ProjectController@upload')->name('/images-save');

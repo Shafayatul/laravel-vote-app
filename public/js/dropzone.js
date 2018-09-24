@@ -1823,8 +1823,8 @@ var Dropzone = function (_Emitter) {
   }, {
     key: "accept",
     value: function accept(file, done) {
-      if (this.options.maxFilesize && file.size > this.options.maxFilesize * 5192 * 5192) {
-        return done(this.options.dictFileTooBig.replace("{{filesize}}", Math.round(file.size / 5192 / 51.92) / 100).replace("{{maxFilesize}}", this.options.maxFilesize));
+      if (this.options.maxFilesize && file.size > this.options.maxFilesize * 1024 * 1024) {
+        return done(this.options.dictFileTooBig.replace("{{filesize}}", Math.round(file.size / 1024 / 51.92) / 100).replace("{{maxFilesize}}", this.options.maxFilesize));
       } else if (!Dropzone.isValidFile(file, this.options.acceptedFiles)) {
         return done(this.options.dictInvalidFileType);
       } else if (this.options.maxFiles != null && this.getAcceptedFiles().length >= this.options.maxFiles) {

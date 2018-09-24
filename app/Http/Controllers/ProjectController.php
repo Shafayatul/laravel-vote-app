@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -22,6 +21,8 @@ use storage;
 use File;
 use Log;
 use Session;
+use Hash;
+
 
 class ProjectController extends Controller
 {
@@ -30,11 +31,37 @@ class ProjectController extends Controller
 
     public function __construct()
     {
-        $this->middleware('auth');
+        $this->middleware('auth', ['except' => ['registerNewUser']]);
 
         $this->photos_path = public_path('/images');
 
     }
+
+    public function registerNewUser(Request $request) {
+        $request->validate([
+            'email' => 'required|unique:users',
+            'name' => 'required',
+            'vorname' => 'required',
+            'firma' => 'required',
+            'password' => 'min:6',
+            'password_confirmation' => 'required_with:password|same:password|min:6',
+            'anr' => 'required',
+            'agb' => 'required',
+            'newsletter' => 'required'
+        ]);
+
+        $user = User::create(['name' => $request->input('name'), 'email' => $request->input('email'), 'password' => bcrypt($request->input('password')), 'firma' => $request->input('firma'),'vorname' => $request->input('vorname'), 'anr' => $request->input('anr'),'agb' => $request->input('agb'),'newsletter' => $request->input('newsletter')]);
+        if($user){
+            if(auth()->attempt(['email' => $request->input('email'), 'password' => $request->input('password')])){
+                return redirect(url('/home')); 
+            }
+        }
+        
+        return back();
+
+    }
+
+
 
     public function insertProjectStepOne(Request $data) {
 
@@ -54,7 +81,7 @@ class ProjectController extends Controller
         $user = Auth::user();
 
         $invoices = Invoice::latest()->paginate(20);
-        
+
         $users_email = User::pluck('email', 'id')->all();
         $users_name = User::pluck('name', 'id')->all();
 
@@ -66,7 +93,7 @@ class ProjectController extends Controller
     public function my_pdf_download() {
 
         $user = Auth::user();
-        
+
         $projects = Project::where('user_id', $user->id)->where('stat', '2')->get();
         $project_ids = "";
 
@@ -93,7 +120,7 @@ class ProjectController extends Controller
 
 
         $user = User::where('id', $id)->first();
-        
+
         $projects = Project::where('user_id', $id)->where('stat', '2')->get();
         $project_ids = "";
 
@@ -134,7 +161,7 @@ class ProjectController extends Controller
         $id = $data->id;
         $project = Project::find($id);
         $project->stat = '3';
-        $project->save();  
+        $project->save();
 
         //get user email
         $project = Project::where('id', $id)->first();
@@ -147,7 +174,7 @@ class ProjectController extends Controller
         Session::flash('alert-success','Project has been successfully rejected.');
 
         return response()->json(array('msg'=> 'Success'), 200);
-    } 
+    }
 
 
     public function deleteProject(Request $data) {
@@ -155,7 +182,7 @@ class ProjectController extends Controller
         $id = $data->id;
         $project = Project::find($id);
         $project->stat = '1';
-        $project->save();  
+        $project->save();
 
 /*        //get user email
         $project = Project::where('id', $id)->first();
@@ -168,7 +195,7 @@ class ProjectController extends Controller
         Session::flash('alert-success','Project has been successfully deleted.');
 
         return response()->json(array('msg'=> 'Success'), 200);
-    } 
+    }
 
 
     public function acceptProject(Request $data) {
@@ -176,7 +203,7 @@ class ProjectController extends Controller
         $id = $data->id;
         $project = Project::find($id);
         $project->stat = '2';
-        $project->save();   
+        $project->save();
 
         //get user email
         $project = Project::where('id', $id)->first();
@@ -189,7 +216,30 @@ class ProjectController extends Controller
         Session::flash('alert-success','Project has been successfully accepted.');
 
         return response()->json(array('msg'=> 'Success'), 200);
-    } 
+    }
+
+    public function juryProject(Request $data) {
+
+        $id = $data->id;
+        $project = Project::find($id);
+        $project->stat = '2';
+        $project->jury = '1';
+        $project->save();
+
+        //get user email
+        $project = Project::where('id', $id)->first();
+        $user_id = $project->user_id;
+        $user = User::where('id', $user_id)->first();
+
+        // Send Email
+        Mail::to($user->email)->send(new AcceptingProject($project->name, $user->vorname.' '.$user->name));
+
+        Session::flash('alert-success','Project has been successfully accepted and has been enabled for the Jury.');
+
+        return response()->json(array('msg'=> 'Success'), 200);
+    }
+
+
 
     public function changeProject(Request $data) {
 
@@ -287,7 +337,7 @@ class ProjectController extends Controller
     public function AddImage($project_id, $cat_id) {
 
       $cats = DB::table('cats')->where('id', '=', $cat_id)->first();
-      
+
       $userId = Auth::id();
       $user = Auth::user();
 
@@ -474,13 +524,10 @@ class ProjectController extends Controller
       $pids = Count::pluck('project_id');
       $uids = Count::pluck('user_id');
 
-
-
-                        
-
       $projects = Project::whereNotIn('id', $pids)
                         ->whereNotIn('user_id', $uids)
                         ->where('stat', '=', '2')
+                        ->where('jury', '=', '1')
                         ->with('images')
                         ->paginate(5);
 
@@ -490,6 +537,7 @@ class ProjectController extends Controller
           $count = Project::whereNotIn('id', $pids)
                         ->whereNotIn('user_id', $uids)
                         ->where('stat', '=', '2')
+                        ->where('jury', '=', '1')
                         ->with('images')
                         ->count();
           if ( ceil($count/5) == $request->input("page")) {
@@ -498,7 +546,7 @@ class ProjectController extends Controller
             $do_work = 1;
           }
 
-        
+
           return [
               'projects' => view('ajax-load')->with(compact('projects', 'user','cat','do_work'))->render(),
               'next_page' => $projects->nextPageUrl()
@@ -507,9 +555,10 @@ class ProjectController extends Controller
         $count = Project::whereNotIn('id', $pids)
                         ->whereNotIn('user_id', $uids)
                         ->where('stat', '=', '2')
+                        ->where('jury', '=', '1')
                         ->with('images')
                         ->count();
-        if ( ceil($count/5) == $request->input("page")) {
+        if ( ceil($count) <= 5) {
           $do_work = 0;
         }else{
           $do_work = 1;
@@ -532,7 +581,7 @@ class ProjectController extends Controller
           'updated_at' => \Carbon\Carbon::now()->toDateTimeString()
       ]);
 
-      $pids = Count::pluck('project_id');
+/*      $pids = Count::pluck('project_id');
       $uids = Count::pluck('user_id');
 
       $projects = Project::whereNotIn('id', $pids)
@@ -542,11 +591,24 @@ class ProjectController extends Controller
           ->get();
 
 
-      return view('project-show-rater', compact('projects', 'user','cat'));
+      return view('project-show-rater', compact('projects', 'user','cat'));*/
 
-
+return redirect('/project-show-rater');
 
     }
+
+    public function adminProjectShow($stat) {
+
+      $user = Auth::user();
+
+      $projects = Project::where('stat', $stat)->paginate(15);
+      $users_email = User::pluck('email', 'id');
+
+
+      return view('admin-project-show', compact('projects', 'user','users_email'));
+
+    }
+
 
     public function ProjectFreigeben(Request $request) {
 
@@ -562,6 +624,7 @@ class ProjectController extends Controller
           $count = Project::where('stat', '=', '0')
                           ->with('images')
                           ->count();
+          // Log::debug($count);
           if ( ceil($count/5) == $request->input("page")) {
             $do_work = 0;
           }else{
@@ -576,13 +639,14 @@ class ProjectController extends Controller
           $count = Project::where('stat', '=', '0')
                           ->with('images')
                           ->count();
-          if ( ceil($count/5) == $request->input("page")) {
+          if ( ceil($count) <= 5) {
             $do_work = 0;
           }else{
             $do_work = 1;
           }
       }
-
+      // Log::debug('Count: '.$count);
+      // Log::debug('Do work'.$do_work);
       return view('project-show-admin', compact('projects', 'user','cat', 'do_work'));
 
     }

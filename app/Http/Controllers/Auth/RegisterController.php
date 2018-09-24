@@ -85,11 +85,11 @@ class RegisterController extends Controller
 /*        DB::table('project')->insert([
 
         ]);*/
-/*        if($user){
+        if($user){
             if(auth()->attempt(['email' => $data['email'], 'password' => $data['password']])){
                 return redirect()->to('/home');
             }
-        }*/
+        }
     }
 
 }

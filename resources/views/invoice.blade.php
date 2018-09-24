@@ -1,87 +1,169 @@
-@extends('layouts.app')
+<!DOCTYPE html>
+<html>
+<head>
 
-@section('content')
-@if(session()->has('alert-success'))
-    <div class="alert alert-success">
-        {{ session()->get('alert-success') }}
-    </div>
-@endif
-<div class="container-fluid">
-  <div class="row justify-content-center">
-      <div class="col-md-8">
-          <div class="card">
-              <div class="card-header">Invoice Download</div>
+</head>
+<body>
+    <style>
 
-	              <div class="card-body">
+    @page { margin: 100px 25px; }
+    footer { position: fixed; bottom: -60px; left: 0px; right: 0px; height: 70px; text-align: center;}
+    p { page-break-after: always; }
+    p:last-child { page-break-after: never; }
 
-					  <table class="table table-bordered">
-					    <thead>
-					      <tr>
-					        <th>#</th>
-					        <th>Name</th>
-					        <th>Email</th>
-					        <th>Payment</th>
-					        <th>Download Invoice</th>
-					      </tr>
-					    </thead>
-					    <tbody>
-					    	@foreach($invoices as $invoice)
-						      <tr>
-						      	<td>{{ $invoice->id}}</td>
-						        <td>{{ $users_name[$invoice->user_id] }}</td>
-						        <td>{{ $users_email[$invoice->user_id] }}</td>
-						        <td>
-						        	@if($invoice->is_paid == 0)
-						        		Not Paid
-						        	@else
-						        		Paid
-						        	@endif
-						        </td>
-						        <td> 
-						        	<a href="{{ url('/downlaod/pdf/'.$invoice->user_id) }}" download="download"> <button class="btn btn-primary"> Downlaod</button></a> 
-						        	@if($invoice->is_paid == 0)
-						        		<button class="btn btn-primary action-paid" id="{{$invoice->id}}"> Accept Payment</button>
-						        	@endif
 
-						        </td>
-						      </tr>
-						    @endforeach
-					    </tbody>
-					  </table>
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
 
-					  <div class="row">
-					  	<div class="col-sm-12" >
-					  		{{ $invoices->links() }}
-					  	</div>
-					  </div>
+    table, th, td {
+        border: 1px solid black;
+    }
+    thead{
 
-	              </div>
-                </div>
-              </div>
-            </div>
-</div>
-<input type = "hidden" name = "ajax_token" value = "{{csrf_token()}}">
-<script src="http://code.jquery.com/jquery-1.5.js"></script>
+    }
+    .right-text{
+        text-align: left;
+        display: block;
+        overflow: hidden;
+    }
+    .block{
+        display: block;
+        overflow: hidden;
+        text-align: right;
+    }
+    </style>
 
-<script type="text/javascript">
+    <footer>
+        Mag. Bianca Lehrner
+        <br>
+        Himmelpfortgasse 20 – 1010 Wien | Tel. 0650 58 00 550 | ATU 65103933
+        <br>
+        office@austrianweddingaward.at - www.austrianweddingaward.at
+    </footer>
+    <main>
+        <div class="block">
+            <br>
+            <img src="logo_sml.jpg">
+            <br>
+            Wien, {{$date}}
+            <br>
+            @if($invoice->id < 10)
+                AWA-{{$year}}-00{{$invoice->id}}
+            @elseif($invoice->id < 100)
+                AWA-{{$year}}-0{{$invoice->id}}
+            @else
+                AWA-{{$year}}-{{$invoice->id}}
+            @endif
 
-$(document).ready(function(){
-	$('.action-paid').click(function(){
-		var token = $('input[name="ajax_token"]').val();
-		$.ajax({
-			url: '/invoice-paid',
-			type: 'POST',
-			data: {
-			  id : $(this).attr('id'),
-			  _token : token
-			},
-			success: function(response){
-				console.log(response);
-				// alert("Project has been successfully accepted.");
-				location.reload();
-			}
-		});
-    });
-});
-</script>
-@endsection
+
+            <br>
+            <br>
+        </div>
+
+        <div class="right-text">
+            {{$user->firma}}<br>
+            {{$user->atu}}<br>
+            {{$user->titel}}<br>
+            {{$user->vorname}}<br>
+            {{$user->adresse}}<br>
+            {{$user->ort}}<br>
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+        <div>
+            Vielen Dank für Ihre Teilnahme am Austrian Wedding Award. Wir freuen uns sehr, dass Sie Ihre kreativen Beiträge eingereicht haben und wünschen Ihnen schon jetzt viel Erfolg beim
+            Austria Wedding Award 2019.
+        </div>
+
+        <br>
+        <br>
+        <br>
+
+        <table class="table table-borderless">
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Description</th>
+                    <th>Group</th>
+                    <th>VAT</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody>
+                @php
+                    $group_array = [];
+                    $netto = 0;
+                    $first_project = true;
+                @endphp
+                @foreach($projects as $project)
+                    <tr>
+                        <td>{{ $loop->iteration }}</td>
+                        <td>{{$project->beschreibung}}</td>
+                        <td>{{$project->group}}</td>
+                        <td>20%</td>
+                        <td>
+                            @php
+                                if(in_array($project->group, $group_array)){
+                                    $price = 30;
+                                }elseif($first_project){
+                                    $price = 80;
+                                    array_push($group_array, $project->group);
+                                    $first_project = false;
+                                }else{
+                                    $price = 45.83;
+                                    array_push($group_array, $project->group);
+                                }
+                                $netto = $netto+$price;
+                            @endphp
+                            {{$price}}
+                        </td>
+                    </tr>
+                @endforeach
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Netto</td>
+                    <td>
+                        {{$netto}}
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Ust 20%</td>
+                    <td>
+                        {{$netto*.20}}
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td></td>
+                    <td></td>
+                    <td>Gesamt</td>
+                    <td>
+                        {{$netto+($netto*.20)}}
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <div>
+            Wir ersuchen Sie um Überweisung des Gesamtbetrags innerhalb von 7 Tagen auf unser Konto bei der Ersten Bank: <b>AT60 2011 1292 4654 2804</b>
+        </div>
+        <br>
+        <br>
+        Herzliche Grüße
+        <br>
+        Susanne Hummel & Bianca Lehrner
+    </main>
+
+
+</body>
+</html>

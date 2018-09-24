@@ -17,63 +17,55 @@
 
 
 
-                    <section class="projects endless-pagination" data-next-page="{{ $projects->nextPageUrl() }}">
+                    <section class="projects" >
                       @foreach($projects as $project)
                       <br>
-
-
-                      <button class="btn btn-primary action-accept" id="{{$project->id}}">Accept</button>
-                      <button class="btn btn-primary action-jury" id="{{$project->id}}">Accept + Jury</button>
-                      <button class="btn btn-primary action-reject" id="{{$project->id}}">Reject</button>
-                      <button class="btn btn-primary action-delete" id="{{$project->id}}">Delete</button>
-
                       <br>
-                      <br>
-                          @if($project->youtube !="")
-                            <p style=""> <button link="{{ $project->youtube }}" class="btn btn-primary youtube-btn">Youtube Video</button> </p>
-                          @endif
-                          <p style=""><b>Kategorie: {{ $project->cat_name }}
-                          <p style=""><b>Projektname:  {{ $project->projektname }} ID: {{ $project->id }}</b></p>
-                          @if ( $project->stat === 0 )
-                            <p style=""><b>Projektstatus: eingereicht</b></p>
-                          @elseif ( $project->stat === 2 )
-                            <p style=""><b>Projektstatus: freigegeben</b></p>
-                          @elseif ($project->stat === 3 )
-                            <p style=""><b>Projektstatus: zurückgewiesen</b></p>
-                          @endif
-
-                          <div class="form-group">
-                              <label for="comment">Projektinfos:</label>
-                              <textarea class="form-control" rows="5" id="comment">{{$project->beschreibung }} {{$project->testimonial}} {{$project->extra}}
-                              </textarea>
-                          </div>
+                          <button class="btn btn-primary project-name" show-id="{{ $project->id }}">{{ $project->name }}</button>
                           <br>
-                          <div class="row">
-                            <?php $imageCount = 0;?>
-                          @foreach($project->images as $image)
+                          {{ $users_email[$project->user_id] }}
 
-                            <?php $imageCount ++; ?>
+                          <div id="{{ $project->id }}" style="display: none;">
+                            @if($project->youtube !="")
+                              <p style=""> <button link="{{ $project->youtube }}" class="btn btn-primary youtube-btn">Youtube Video</button> </p>
+                            @endif
+                            <p style=""><b>Kategorie: {{ $project->cat_name }}
+                            <p style=""><b>Projektname:  {{ $project->projektname }} ID: {{ $project->id }}</b></p>
+                            @if ( $project->stat === 0 )
+                              <p style=""><b>Projektstatus: eingereicht</b></p>
+                            @elseif ( $project->stat === 2 )
+                              <p style=""><b>Projektstatus: freigegeben</b></p>
+                            @elseif ($project->stat === 3 )
+                              <p style=""><b>Projektstatus: zurückgewiesen</b></p>
+                            @endif
 
-                            <div class="column" id = "thumb-<?php echo md5($image->filename)?>">
-                              <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:100%;height:100%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
+                            <div class="form-group">
+                                <label for="comment">Projektinfos:</label>
+                                <textarea class="form-control" rows="5" id="comment">{{$project->beschreibung }} {{$project->testimonial}} {{$project->extra}}
+                                </textarea>
                             </div>
+                            <br>
+                            <div class="row">
+                              <?php $imageCount = 0;?>
+                            @foreach($project->images as $image)
+
+                              <?php $imageCount ++; ?>
+
+                              <div class="column" id = "thumb-<?php echo md5($image->filename)?>">
+                                <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:100%;height:100%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
+                              </div>
+
+
+
+
+
 
                           @endforeach
+  </div>
 
-                          </div>
                           <br>
 
 
-                          {{-- <form method="POST" action="{{ route('project-freigegeben') }}">
-                              @csrf
-                                {{ Form::hidden('project_id', $project->id) }}
-                                <label for="Cat"></label>
-                                    <select class="form-control" name="counts" id="counts" data-parsley-required="true" onchange='this.form.submit()'>
-                                      <option value="2">Freigeben</option>
-                                      <option value="3">Zurückweisen</option>
-                                      <option value="1">Löschen</option>
-                                    </select>
-                              </form> --}}
 
                       <div id="myModal-{{$project->name}}" class="modal">
                         <span class="close cursor" onclick="closeModal('{{$project->name}}')">&times;</span>
@@ -114,11 +106,19 @@
                         <div style = "height : 80px"></div>
                       </div>
                       <div style="height: 50px;"></div>
+                      </div>
                       @endforeach
+
+                      <div class="row">
+                        <div class="col-sm-12" >
+                          {{ $projects->links() }}
+                        </div>
+                      </div>
+
+
                     </section>
-                    <div class="ajax-load text-center" style="display:none">
-                        <p><img src="{{asset('images/loading.gif')}}">Loading More post</p>
-                    </div>
+
+
 
 
                   </div>
@@ -127,31 +127,7 @@
       </div>
     </div>
 
-<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-    <div class="modal-dialog" role="document">
-        <div class="modal-content">
-            <div class="modal-header text-center">
-                <h4 class="modal-title w-100 font-weight-bold">Reason of rejection</h4>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
-            </div>
-            <div class="modal-body mx-3">
-                <div class="md-form">
-                    <i class="fa fa-pencil prefix grey-text"></i>
-                    <textarea type="text" id="form8" class="md-textarea form-control email-body" rows="4"></textarea>
-                    {{-- <label data-error="wrong" data-success="right" for="form8">Your message</label> --}}
-                </div>
-            </div>
-            <div class="modal-footer d-flex justify-content-center">
-                <button class="btn btn-deep-orange" id="model-send-email">Send Email & Reject Project</button>
-                <button class="btn btn-deep-orange" id="model-cancel">Cancel</button>
-            </div>
-        </div>
-    </div>
-</div>
 
-<input type="hidden"  id="do_work" value="{{$do_work}}">
 
 <!-- Youtube Modal -->
 <div class="modal fade" id="myYoutube" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
@@ -253,22 +229,12 @@ $(document).ready(function() {
       });
     });
 
-    $('.action-jury').click(function(){
 
-      $.ajax({
-          url: '/project-jury-admin',
-          type: 'POST',
-
-          data: {
-              id : $(this).attr('id'),
-              _token : token
-          },
-          success: function(response){
-            // alert("Project has been successfully accepted.");
-            location.reload();
-          }
-      });
+    $('.project-name').click(function(){
+      var id = $(this).attr('show-id');
+      $('#'+id).toggle();
     });
+
 
 
     var rejectionId = 0;

@@ -31,6 +31,7 @@ class CreateProjectsTable extends Migration
             $table->string('ort')->nullable();
             $table->integer('stat')->default(0);
             $table->integer('email')->default(0);
+            $table->boolean('jury')->default(0);
             $table->timestamps();
             $table->softDeletes();
 

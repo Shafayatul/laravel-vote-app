@@ -51,13 +51,23 @@
                             @if($active_project_cnt != 0)
                                 <li><a class="nav-link" href="{{ url('/downlaod/my-invoice/') }}">{{ __('Download Invoice') }}</a></li>
                             @endif
-
                           <li><a class="nav-link" href="{{ route('project-insert') }}">{{ __('Projekt anlegen') }}</a></li>
                           <li><a class="nav-link" href="{{ route('project-show') }}">{{ __('Projekt(e) anschauen') }}</a></li>
                         @elseif ($user->rolle === 1)
                           <li><a class="nav-link" href="{{ route('project-show-rater') }}">{{ __('Projekt(e) bewerten') }}</a></li>
                         @else ($user->rolle === 9)
                             <li><a class="nav-link" href="{{ url('/invoice') }}">{{ __('Admin Invoice') }}</a></li>
+
+
+                            <li><a class="nav-link" href="{{ url('/admin-project-show/1') }}">{{ __('Deleted Project') }}</a></li>
+
+                            <li><a class="nav-link" href="{{ url('/admin-project-show/2') }}">{{ __('Approved Project') }}</a></li>
+
+                            <li><a class="nav-link" href="{{ url('/admin-project-show/3') }}">{{ __('Rejected Project') }}</a></li>
+
+
+
+
                           <li><a class="nav-link" href="{{ route('project-freigeben') }}">{{ __('Projekt(e) freigeben') }}</a></li>
 
                           

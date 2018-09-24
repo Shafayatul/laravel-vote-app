@@ -19,7 +19,7 @@
                     </div>
                   @endif
 
-                    <form method="POST" action="{{ route('register') }}">
+                    <form method="POST" action="{{ url('/register-new-user') }}">
                         @csrf
                     <div class="form-group row">
                       <label for="anr" class="col-md-4 col-form-label text-md-right">{{ __('Anrede') }}</label>
