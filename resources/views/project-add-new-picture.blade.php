@@ -25,14 +25,14 @@
 
                     <div class="row" id="ferting-btn" style="display: none;">
                       <div class="col-sm-4 col-sm-offset-4">
-                        <a class="btn btn-success btn-block" href="{{ route('project-show') }}"><b>Fertig</b></a>
+                        <a class="btn btn-success btn-block" href="{{ route('project-show') }}"><b>Project speichern!</b></a>
                       </div>
                     </div>
                   @else
                     <br>
                     <br>
                     <br>
-                    <h2 class="text-center">You can not add image any more.</h2>
+                    <h2 class="text-center">Sie können keine Bilder mehr hinzufügen!</h2>
                     <br>
                     <br>
                     <br>
@@ -58,7 +58,7 @@
     var total_photos_counter = 0;
     var max = {{ $cats->count }};
     Dropzone.options.myDropzone = {
-        maxFiles: '{{$max_img}}',
+        maxFiles: '{{ $max_img }}',
         paramName: 'file',
         maxFilesize: 2, // MB
         acceptedFiles: ".jpeg,.jpg,.png,.gif",
@@ -75,4 +75,29 @@
       }
     };
 </script>
+
+
+{{-- <script>
+    var total_photos_counter = 0;
+    var max = {{ $cats->count }};
+    Dropzone.options.myDropzone = {
+        maxFiles: '{{$max_img}}',
+        paramName: 'file',
+        maxFilesize: 2, // MB
+        acceptedFiles: ".jpeg,.jpg,.png,.gif",
+        addRemoveLinks: true,
+
+        success: function (file, done) {
+          total_photos_counter++;
+          $("#counter").text("# " + total_photos_counter);
+          if(total_photos_counter>0){
+            $('#ferting-btn').show();
+          }else{
+            $('#ferting-btn').hide();
+          }
+        },
+
+        error: 
+    };
+</script> --}}
 @endsection

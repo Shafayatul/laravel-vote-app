@@ -33,9 +33,61 @@ class ProjectController extends Controller
     {
         $this->middleware('auth', ['except' => ['registerNewUser']]);
 
-        $this->photos_path = public_path('/images');
+        $this->photos_path = '../award/images';
 
     }
+
+
+
+
+  
+
+    public function SingleProject($id) {
+
+      $user = Auth::user();
+
+      $projects = Project::where('id', $id)
+                        ->with('images')
+                        ->paginate(5);
+
+
+      $do_work = 0;
+      return view('project-show-single', compact('projects', 'user','cat', 'do_work'));
+    } 
+  
+
+    public function TopFive() {
+        $user = Auth::user();
+
+        $cats = DB::table('cats')->pluck('name', 'id');
+        $projects = DB::table('projects')->pluck('name', 'id');
+        $point = array();
+        foreach ($cats as $key => $value) {
+          $projects_under_this_cat = DB::table('projects')->where('cat_id', $key)->pluck('id');
+          $counts = DB::table('counts')->whereIn('project_id' , $projects_under_this_cat)->get();
+          $point[$value] = array();
+          foreach ($counts as $count) {
+            if (array_key_exists($count->project_id, $point[$value])){
+              $point[$value][$count->project_id] = $point[$value][$count->project_id]+$count->counts;
+            }else{
+              $point[$value][$count->project_id] = $count->counts;
+            }
+          }
+          arsort($point[$value]);
+          $point[$value] = array_slice($point[$value], 0, 5, true);
+        }
+        return view('project-top-five', get_defined_vars())->with(['user' => $user, 'cats' => $cats, 'point' => $point, 'projects' => $projects]);
+    } 
+
+
+
+
+
+
+
+
+
+
 
     public function registerNewUser(Request $request) {
         $request->validate([
@@ -47,10 +99,17 @@ class ProjectController extends Controller
             'password_confirmation' => 'required_with:password|same:password|min:6',
             'anr' => 'required',
             'agb' => 'required',
-            'newsletter' => 'required'
+			'datenschutz' => 'required'
         ]);
+		
+        if($request->input('newsletter') == 1){
+          $news_later =1;
+        }else{
+          $news_later=0;
+        }
 
-        $user = User::create(['name' => $request->input('name'), 'email' => $request->input('email'), 'password' => bcrypt($request->input('password')), 'firma' => $request->input('firma'),'vorname' => $request->input('vorname'), 'anr' => $request->input('anr'),'agb' => $request->input('agb'),'newsletter' => $request->input('newsletter')]);
+        $user = User::create(['name' => $request->input('name'), 'email' => $request->input('email'), 'password' => bcrypt($request->input('password')), 'firma' => $request->input('firma'),'vorname' => $request->input('vorname'), 'anr' => $request->input('anr'),'agb' => $request->input('agb'),'newsletter' => $news_later,
+		'datenschutz' => $request->input('datenschutz')]);
         if($user){
             if(auth()->attempt(['email' => $request->input('email'), 'password' => $request->input('password')])){
                 return redirect(url('/home')); 
@@ -171,7 +230,7 @@ class ProjectController extends Controller
         // Send Email
         Mail::to($user->email)->send(new RejectingProject($data->emailBody, $project->name, $user->vorname.' '.$user->name));
 
-        Session::flash('alert-success','Project has been successfully rejected.');
+        Session::flash('alert-success','Das Projekt wurde erfolgreich zurückgewiesen.');
 
         return response()->json(array('msg'=> 'Success'), 200);
     }
@@ -192,7 +251,7 @@ class ProjectController extends Controller
         // Send Email
         Mail::to($user->email)->send(new RejectingProject($data->emailBody, $project->name, $user->vorname.' '.$user->name));*/
 
-        Session::flash('alert-success','Project has been successfully deleted.');
+        Session::flash('alert-success','Das Projekt wurde erfolgreich gelöscht.');
 
         return response()->json(array('msg'=> 'Success'), 200);
     }
@@ -213,7 +272,7 @@ class ProjectController extends Controller
         // Send Email
         Mail::to($user->email)->send(new AcceptingProject($project->name, $user->vorname.' '.$user->name));
 
-        Session::flash('alert-success','Project has been successfully accepted.');
+        Session::flash('alert-success','Das Projekt wurde angenommen.');
 
         return response()->json(array('msg'=> 'Success'), 200);
     }
@@ -234,7 +293,7 @@ class ProjectController extends Controller
         // Send Email
         Mail::to($user->email)->send(new AcceptingProject($project->name, $user->vorname.' '.$user->name));
 
-        Session::flash('alert-success','Project has been successfully accepted and has been enabled for the Jury.');
+        Session::flash('alert-success','Das Projekt wurde angenommen und für die Jury freigegeben.');
 
         return response()->json(array('msg'=> 'Success'), 200);
     }
@@ -276,6 +335,36 @@ class ProjectController extends Controller
 
       $project_id = $data['project_id'];
 
+
+      /**
+      * video upload
+      */
+      //get old link
+      $old_video = Project::where('id', $project_id)->first()->youtube;
+
+      $youtube = "";
+      if ($data->hasFile('youtube')) {
+        $video = $data->file('youtube');
+
+        $file = $video->getPathName();
+        $image = addslashes(file_get_contents($video->getPathName()));
+        $image_name = addslashes($video->getClientOriginalName());
+        $image_name_next = time().'.'.$video->getClientOriginalExtension();
+
+        if(move_uploaded_file($video->getPathName(),"../award/videos/" . $video->getClientOriginalName())){
+          rename("../award/videos/$image_name","../award/videos/$image_name_next");
+          $youtube = $image_name_next;
+
+          //delete old file
+          unlink("../award/videos/".$old_video);
+        }
+        else{
+          echo 'Error: Video not uploaded in folder';
+        }
+
+      }
+
+
       DB::table('projects')
               ->where('id', $project_id)
               ->update(['name' => $data['name'],
@@ -311,7 +400,29 @@ class ProjectController extends Controller
 
       $projectname = time();
 
-      $project_id = DB::table('Projects')->insertGetId([
+      // video upload
+      $youtube = "";
+      if ($data->hasFile('youtube')) {
+        $video = $data->file('youtube');
+
+        $file = $video->getPathName();
+        $image = addslashes(file_get_contents($video->getPathName()));
+        $image_name = addslashes($video->getClientOriginalName());
+        $image_name_next = time().'.'.$video->getClientOriginalExtension();
+
+        if(move_uploaded_file($video->getPathName(),"../award/videos/" . $video->getClientOriginalName())){
+          rename("../award/videos/$image_name","videos/$image_name_next");
+          $youtube = $image_name_next;
+        }
+        else{
+          echo 'Error: Video not uploaded in folder';
+        }
+
+      }
+
+
+
+      $project_id = DB::table('projects')->insertGetId([
           'name' => $data->input("name"),
           'projektname' => $projectname,
           'cat_id' => $data->input("cat_id"),
@@ -319,7 +430,7 @@ class ProjectController extends Controller
           'group' => $group,
           'user_id' => $userId,
           'beschreibung' => $data->input("beschreibung"),
-          'youtube' => $data->input("youtube"),
+          'youtube' => $youtube,
           'copyright' => $data->input("copyright"),
           'testimonial' => $data->input("testimonial"),
           'extra' => $data->input("extra"),
@@ -328,7 +439,7 @@ class ProjectController extends Controller
           'updated_at' => \Carbon\Carbon::now()->toDateTimeString()
       ]);
 
-      Session::flash('alert-success','Project has been added. Please add images for the project');
+      Session::flash('alert-success','Das Projekt wurde gespeichert. Bitte fügen Sie jetzt Bilder hinzu.');
 
       return view('project-insert-picture', get_defined_vars())->with(['user' => $user]);
     }
@@ -343,16 +454,33 @@ class ProjectController extends Controller
 
       //max image = 5 - current image
       $current_image_number = DB::table('images')->where('project_id', $project_id)->count();
-      $max_img = 5-$current_image_number;
+      $max_img = $cats->count-$current_image_number;
 
       if ($max_img <0 ) {
         $max_img = 0;
       }
-
-
-
       return view('project-add-new-picture', get_defined_vars())->with(['user' => $user, 'max_img' => $max_img]);
     }
+
+    public function EditImage($project_id, $cat_id) {
+
+      $cats = DB::table('cats')->where('id', '=', $cat_id)->first();
+
+      $userId = Auth::id();
+      $user = Auth::user();
+
+      //max image = 5 - current image
+      $current_image_number = DB::table('images')->where('project_id', $project_id)->count();
+      $current_images = DB::table('images')->where('project_id', $project_id)->get();
+      $max_img = $cats->count-$current_image_number;
+
+      if ($max_img <0 ) {
+        $max_img = 0;
+      }
+      return view('project-edit-new-picture', get_defined_vars())->with(['user' => $user, 'max_img' => $max_img, 'current_images' => $current_images ]);
+    }
+
+
 
     public function upload(Request $request)
     {
@@ -419,6 +547,22 @@ class ProjectController extends Controller
       }
 
     }
+
+    public function DeleteImage(Request $request)
+    {
+      $id = $request->input('id');
+
+      File::delete('../award/'.$request->input('thumb_url'));
+      File::delete('../award/'.$request->input('url'));
+
+      DB::table('images')->where('id', '=', $id)->delete();
+
+      Session::flash('alert-success','Image Deleted.');
+
+      return json_encode(array('status' => 200));
+
+    }
+
 
     public function delete(Request $request)
     {
@@ -565,6 +709,8 @@ class ProjectController extends Controller
         }
       }
 
+      // dd($count);
+
       return view('project-show-rater', compact('projects', 'user','cat', 'do_work'));
 
     }
@@ -573,7 +719,7 @@ class ProjectController extends Controller
 
       $user = Auth::user();
 
-      DB::table('Counts')->insert([
+      DB::table('counts')->insert([
           'project_id' => $request['project_id'],
           'user_id' => $user->id,
           'counts' => $request->counts,

@@ -110,16 +110,23 @@
                         </div>
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
-                              Hier steht der AGB Text
-                            <input name="agb" type="checkbox" id="agb" value="1">
+                              Ich hab die Regeln zum Award gelesen und bin mit den Richtlinien einverstanden
+                                <input name="agb" type="checkbox" id="agb" value="1">
                             </div>
                         </div>
 
                         <div class="form-group row mb-0">
                             <div class="col-md-6 offset-md-4">
-                              Hier steht der Newsletter Text
-                            <input name="newsletter" type="checkbox" id="newsletter" value="1">
+                              Ich bin damit einverstanden, dass meine hier <a href="https://www.austrianweddingaward.at/datenschutzerklaerung">angegebenen Daten</a> zur Bearbeitung der Einreichung verwendet werden.
+<input name="datenschutz" type="checkbox" id="datenschutz" value="1">
                             </div>
+                        </div>
+						
+						<div class="form-group row mb-0">
+                            <div class="col-md-6 offset-md-4">
+                              Ich möchte immer über AWA-Neuigkeiten informiert werden.
+                              <input name="newsletter" type="checkbox" id="newsletter" value="1">
+                          </div>
                         </div>
 
                         <div class="form-group row mb-0">

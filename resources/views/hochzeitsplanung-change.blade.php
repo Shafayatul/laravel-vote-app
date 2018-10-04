@@ -78,7 +78,7 @@
                         </div>
 
                         <div class="form-group row">
-                            <label for="testimonial" class="col-md-4 col-form-label text-md-right">{{ __('Referenz*') }}</label>
+                            <label for="testimonial" class="col-md-4 col-form-label text-md-right">{{ __('Referenz  mit Kontaktdaten*') }}</label>
 
                             <div class="col-md-6">
                                 <textarea id="testimonial" rows="10" class="form-control{{ $errors->has('testimonial') ? ' is-invalid' : '' }}" name="testimonial" value="{{ old('testimonial') }}" required>{{ $project->testimonial }}</textarea>

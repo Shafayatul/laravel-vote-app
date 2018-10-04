@@ -27,14 +27,14 @@
 
                           <div id="{{ $project->id }}" style="display: none;">
                             @if($project->youtube !="")
-                              <p style=""> <button link="{{ $project->youtube }}" class="btn btn-primary youtube-btn">Youtube Video</button> </p>
+                              <p style=""> <button link="{{ url('videos/'.$project->youtube) }}" class="btn btn-primary youtube-btn">Video</button> </p>
                             @endif
                             <p style=""><b>Kategorie: {{ $project->cat_name }}
                             <p style=""><b>Projektname:  {{ $project->projektname }} ID: {{ $project->id }}</b></p>
                             @if ( $project->stat === 0 )
-                              <p style=""><b>Projektstatus: eingereicht</b></p>
+                              <p style=""><b>Projektstatus: abgespeichert</b></p>
                             @elseif ( $project->stat === 2 )
-                              <p style=""><b>Projektstatus: freigegeben</b></p>
+                              <p style=""><b>Projektstatus: zur Bewertung freigegeben</b></p>
                             @elseif ($project->stat === 3 )
                               <p style=""><b>Projektstatus: zurückgewiesen</b></p>
                             @endif
@@ -52,7 +52,7 @@
                               <?php $imageCount ++; ?>
 
                               <div class="column" id = "thumb-<?php echo md5($image->filename)?>">
-                                <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:100%;height:100%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
+                                <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:70%;height:70%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
                               </div>
 
 
@@ -91,7 +91,7 @@
                             @if ($user->rolle === 0)
                             <div class="column clearfix" id = "slide-<?php echo md5($image->filename)?>">
                               <div class = "clearfix text-center" style = "background : grey">
-                                <span class="glyphicon glyphicon-trash" onclick="del('{{$image->filename}}' , '<?php echo md5($image->filename)?>')"></span>
+                                
                               </div>
                               <div class = "image-wrapper">
                                 <img id = "slideimg-<?php echo md5($image->filename)?>" class="demo-<?php echo $project->name ?> cursor" src="{{ $image->thumb_url }}" style="width:100%" onclick="currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" alt="Nature and sunrise">

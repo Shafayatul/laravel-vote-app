@@ -24,7 +24,7 @@ Projectbeschreibung: {{$project->beschreibung }}
                           	<?php $imageCount ++; ?>
 
                       		  <div class="column" id = "thumb-<?php echo md5($image->filename)?>">
-                      		    <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:100%;height:100%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
+                      		    <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:70%;height:70%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
                       		  </div>
 
                           @endforeach
@@ -68,7 +68,7 @@ Projectbeschreibung: {{$project->beschreibung }}
                             @if ($user->rolle === 0)
                       	    <div class="column clearfix" id = "slide-<?php echo md5($image->filename)?>">
                               <div class = "clearfix text-center" style = "background : grey">
-                                <span class="glyphicon glyphicon-trash" onclick="del('{{$image->filename}}' , '<?php echo md5($image->filename)?>')"></span>
+                                
                               </div>
                               <div class = "image-wrapper">
                         	      <img id = "slideimg-<?php echo md5($image->filename)?>" class="demo-<?php echo $project->name ?> cursor" src="{{ $image->thumb_url }}" style="width:100%" onclick="currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" alt="Nature and sunrise">

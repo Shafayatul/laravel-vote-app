@@ -24,7 +24,7 @@ Projectbeschreibung: {{$project->beschreibung }}
                           	<?php $imageCount ++; ?>
 
                       		  <div class="column" id = "thumb-<?php echo md5($image->filename)?>">
-                      		    <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:100%;height:100%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
+                      		    <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:70%;height:70%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
                       		  </div>
 
                           @endforeach

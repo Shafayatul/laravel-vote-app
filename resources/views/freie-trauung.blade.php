@@ -48,7 +48,7 @@
     </div>
 
     <div class="form-group row">
-        <label for="testimonial" class="col-md-4 col-form-label text-md-right">{{ __('Referenz*') }}</label>
+        <label for="testimonial" class="col-md-4 col-form-label text-md-right">{{ __('Referenz  mit Kontaktdaten*') }}</label>
 
         <div class="col-md-6">
             <textarea id="testimonial" rows="10" class="form-control{{ $errors->has('testimonial') ? ' is-invalid' : '' }}" name="testimonial" value="{{ old('testimonial') }}" required></textarea>
@@ -56,20 +56,6 @@
             @if ($errors->has('testimonial'))
                 <span class="invalid-feedback">
                     <strong>{{ $errors->first('testimonial') }}</strong>
-                </span>
-            @endif
-        </div>
-    </div>
-
-    <div class="form-group row">
-        <label for="youtube" class="col-md-4 col-form-label text-md-right">{{ __('Youtube Link*') }}</label>
-
-        <div class="col-md-6">
-            <input id="youtube" type="text" class="form-control{{ $errors->has('youtube') ? ' is-invalid' : '' }}" name="youtube" value="{{ old('youtube') }}" required>
-
-            @if ($errors->has('youtube'))
-                <span class="invalid-feedback">
-                    <strong>{{ $errors->first('youtube') }}</strong>
                 </span>
             @endif
         </div>

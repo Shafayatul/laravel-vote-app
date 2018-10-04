@@ -46,6 +46,21 @@
             @endif
         </div>
     </div>
+	
+	<div class="form-group row">
+        <label for="extra" class="col-md-4 col-form-label text-md-right">{{ __('Datum und Ort der Hochzeit*') }}</label>
+
+        <div class="col-md-6">
+            <input id="extra" type="text" class="form-control{{ $errors->has('extra') ? ' is-invalid' : '' }}" name="extra" value="{{ old('extra') }}" required>
+
+            @if ($errors->has('extra'))
+                <span class="invalid-feedback">
+                    <strong>{{ $errors->first('extra') }}</strong>
+                </span>
+            @endif
+        </div>
+    </div>
+
 
     <div class="form-group row">
         <label for="copyright" class="col-md-4 col-form-label text-md-right">{{ __('Copyright*') }}</label>

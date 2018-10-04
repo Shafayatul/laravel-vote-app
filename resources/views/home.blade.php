@@ -25,9 +25,9 @@
 
                     @if ($user->first === 0)
 
-                      <div class="links">
-                          <a href="{{ route('user-change') }}">{{ __('Userdaten ändern!') }}</a>
-                      </div>
+                     <script type="text/javascript">
+    					window.location = "user-change";//here double curly bracket
+					</script>
                     @else
                       <div class="links">
                         @if ($user->rolle === 0)

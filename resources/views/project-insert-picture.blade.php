@@ -26,7 +26,7 @@
 
                   <div class="row" id="ferting-btn" style="display: none;">
                     <div class="col-sm-4 col-sm-offset-4">
-                      <a class="btn btn-success btn-block" href="{{ route('project-show') }}"><b>Fertig</b></a>
+                      <a class="btn btn-success btn-block" href="{{ route('project-show') }}"><b>Projekt jetzt einreichen</b></a>
                     </div>
                   </div>
 
@@ -44,7 +44,7 @@
     var total_photos_counter = 0;
     var max = {{ $cats->count }};
     Dropzone.options.myDropzone = {
-        maxFiles: 5,
+        maxFiles: '{{ $cats->count }}',
         paramName: 'file',
         maxFilesize: 2, // MB
         acceptedFiles: ".jpeg,.jpg,.png,.gif",

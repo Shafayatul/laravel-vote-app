@@ -16,23 +16,39 @@
                   <div class="card-body">
                       @foreach($projects as $project)
                           @if($project->youtube !="")
-                            <p style=""> <button link="{{ $project->youtube }}" class="btn btn-primary youtube-btn">Youtube Video</button> </p>
+                            <p style=""> <button link="{{ url('videos/'.$project->youtube) }}" class="btn btn-primary youtube-btn">Video</button> </p>
                           @endif
                           <p style=""><b>Kategorie: {{ $project->cat_name }}
                           <p style=""><b>Projektname:  {{ $project->name }} ID: {{ $project->id }}</b></p>
                           @if ( $project->stat === 0 )
-                            <p style=""><b>Projektstatus: eingereicht</b></p>
+                            <p style=""><b>Projektstatus: abgespeichert</b></p>
                           @elseif ( $project->stat === 2 )
-                            <p style=""><b>Projektstatus: freigegeben</b></p>
+                            <p style=""><b>Projektstatus: Zur Bewertung freigegeben</b></p>
                           @elseif ($project->stat === 3 )
                             <p style=""><b>Projektstatus: zurückgewiesen</b></p>
                           @endif
 
                           <div class="form-group">
-                              <label for="comment">Projektinfos:</label>
-                              <textarea class="form-control" rows="5" id="comment">{{$project->beschreibung }} {{$project->testimonial}} {{$project->extra}}
+                              <label for="comment">Projektbeschreibung: </label>
+                              <textarea class="form-control" rows="5" id="comment" readonly>{{$project->beschreibung }}
                               </textarea>
                           </div>
+						  @if($project->testimonial !="")
+						  <br>	  
+						  <div class="form-group">
+                              <label for="comment">Referenzen: </label>
+                              <textarea class="form-control" rows="5" id="comment" readonly>{{$project->testimonial}}
+                              </textarea>
+                          </div>
+						  @endif
+						  @if($project->extra !="")
+						  <br>	  
+						  <div class="form-group">
+                              <label for="comment">Extras: </label>
+                              <textarea class="form-control" rows="5" id="comment" readonly>{{$project->extra}}
+                              </textarea>
+                          </div>
+						  @endif
                           <br>
                           <div class="row">
                           	<?php $imageCount = 0;?>
@@ -41,7 +57,7 @@
                           	<?php $imageCount ++; ?>
 
                       		  <div class="column" id = "thumb-<?php echo md5($image->filename)?>">
-                      		    <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:100%;height:100%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
+                      		    <img src="{{ $image->thumb_url }}" alt="{{$image->filename}}" style="width:70%;height:70%" onclick="openModal('{{$project->name}}');currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" class="hover-shadow cursor">
                       		  </div>
 
                           @endforeach
@@ -61,7 +77,9 @@
                                <button type="submit" class="btn btn-primary" value = "change" name="submit">
                                    {{ __('Ändern') }}
                                </button>
-                               <a href="{{ url('/project/add-image/'.$project->id.'/'.$project->cat_id) }}" class="btn btn-primary" >Add Image</a>
+                               <a href="{{ url('/project/add-image/'.$project->id.'/'.$project->cat_id) }}" class="btn btn-primary" >Bild hinzufügen</a>
+                               <a href="{{ url('/project/edit-image/'.$project->id.'/'.$project->cat_id) }}" class="btn btn-primary" >Bild(er) ändern</a>
+
 
                                @endif
                             </form>
@@ -90,7 +108,7 @@
                       	    <?php $imageCount ++; ?>
                       	    <div class="column clearfix" id = "slide-<?php echo md5($image->filename)?>">
                               <div class = "clearfix text-center" style = "background : grey">
-                                <span class="glyphicon glyphicon-trash" onclick="del('{{$image->filename}}' , '<?php echo md5($image->filename)?>')"></span>
+                                
                               </div>
                               <div class = "image-wrapper">
                         	      <img id = "slideimg-<?php echo md5($image->filename)?>" class="demo-<?php echo $project->name ?> cursor" src="{{ $image->thumb_url }}" style="width:100%" onclick="currentSlide(<?php echo $imageCount ?> , '<?php echo $project->name?>')" alt="Nature and sunrise">

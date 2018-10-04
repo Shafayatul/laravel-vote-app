@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers\Auth;
 
-use Auth;
 use App\User;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Hash;
@@ -59,6 +58,7 @@ class RegisterController extends Controller
             'anr' => 'required|string|max:10',
             'agb' => 'required|string|max:1',
             'newsletter' => 'nullable|string|max:1',
+			'datenschutz' => 'nullable|string|max:1',
         ]);
     }
 
@@ -71,25 +71,18 @@ class RegisterController extends Controller
     protected function create(array $data)
     {
 
-        $user = User::create(
-            [
-                'name' => $data['name'],
-                'vorname' => $data['vorname'],
-                'email' => $data['email'],
-                'password' => Hash::make($data['password']),
-                'firma' => $data['firma'],
-                'anr' => $data['anr'],
-                'agb' => $data['agb'],
-                'newsletter' => $data['newsletter']
-            ]);
-/*        DB::table('project')->insert([
+        DB::table('project')->insert([
+            'name' => $data['name'],
+            'vorname' => $data['vorname'],
+            'email' => $data['email'],
+            'password' => Hash::make($data['password']),
+            'firma' => $data['firma'],
+            'anr' => $data['anr'],
+            'agb' => $data['agb'],
+            'newsletter' => $data['newsletter'],
+			'datenschutz' => $data['datenschutz'],
+        ]);
 
-        ]);*/
-        if($user){
-            if(auth()->attempt(['email' => $data['email'], 'password' => $data['password']])){
-                return redirect()->to('/home');
-            }
-        }
     }
 
 }
